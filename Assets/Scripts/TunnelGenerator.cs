@@ -46,6 +46,22 @@ public class TunnelGenerator : MonoBehaviour
         GameObject go = Instantiate(tunnelPrefab, spawnPos, Quaternion.identity);
         go.transform.SetParent(transform);
         
+        // --- Tema Sisteminden Materyal Uygulama ---
+        if (ThemeManager.Instance != null)
+        {
+            Material tunnelMat = ThemeManager.Instance.GetTunnelMaterial();
+            if (tunnelMat != null)
+            {
+                // Tünelin içindeki MeshRenderer'ı bulup materyalini değiştir.
+                // Not: Tünelin prefab yapısına göre GetComponentsInChildren de kullanılabilir.
+                MeshRenderer[] renderers = go.GetComponentsInChildren<MeshRenderer>();
+                foreach (MeshRenderer r in renderers)
+                {
+                    r.material = tunnelMat;
+                }
+            }
+        }
+
         // Listeye ekle ve bir sonraki tünelin spawn noktasını güncelle
         activeTunnels.Add(go);
         spawnZ += tunnelLength;

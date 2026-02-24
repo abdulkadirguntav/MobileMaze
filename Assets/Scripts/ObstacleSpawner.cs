@@ -125,6 +125,20 @@ public class ObstacleSpawner : MonoBehaviour
                 ob.transform.position = new Vector3(spawnX, spawnY, zPosition);
                 ob.SetActive(true);
 
+                // --- Tema Sisteminden Materyal Uygulama ---
+                if (ThemeManager.Instance != null)
+                {
+                    Material obstacleMat = ThemeManager.Instance.GetObstacleMaterial();
+                    if (obstacleMat != null)
+                    {
+                        MeshRenderer[] renderers = ob.GetComponentsInChildren<MeshRenderer>();
+                        foreach (MeshRenderer r in renderers)
+                        {
+                            r.material = obstacleMat;
+                        }
+                    }
+                }
+
                 Obstacle obsScript = ob.GetComponent<Obstacle>();
                 if (obsScript != null)
                 {

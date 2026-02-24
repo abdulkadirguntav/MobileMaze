@@ -396,6 +396,8 @@
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Obstacle.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
+"Assets/Scripts/ThemeData.cs"
+"Assets/Scripts/ThemeManager.cs"
 "Assets/Scripts/TunnelGenerator.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01_UGUI.cs"

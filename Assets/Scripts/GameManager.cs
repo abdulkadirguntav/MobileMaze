@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public CharacterController playerController;
     [Tooltip("Z mesafesini hesaplamak için oyuncu referansı")]
     public Transform playerTransform;
+    [Tooltip("Dinamik ışıklandırma referansı")]
+    public LightingEvolution lightingEvolution;
 
     [Header("Game State")]
     public float score;
@@ -53,6 +55,12 @@ public class GameManager : MonoBehaviour
         score = Mathf.Floor(playerTransform.position.z - startZ);
         CheckPhases();
         
+        // Dinamik ışıklandırmayı skora göre güncelle
+        if (lightingEvolution != null)
+        {
+            lightingEvolution.UpdateLighting(score);
+        }
+
         // Hızı her frame güncelle (Daralan tünel ve hardcore hızlanma)
         UpdatePhaseAndSpeed();
     }
