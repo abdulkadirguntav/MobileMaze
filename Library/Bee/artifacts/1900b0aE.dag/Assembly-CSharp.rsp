@@ -394,6 +394,7 @@
 "Assets/Scripts/CameraFollow.cs"
 "Assets/Scripts/CharacterController.cs"
 "Assets/Scripts/GameManager.cs"
+"Assets/Scripts/LightingEvolution.cs"
 "Assets/Scripts/Obstacle.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
 "Assets/Scripts/ThemeData.cs"
