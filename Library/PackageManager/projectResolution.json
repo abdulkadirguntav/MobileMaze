@@ -9,6 +9,35 @@
     "C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.67f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\BuiltInPackagesCombined.sha1"
   ],
   "outputs": {
+    "com.unity.ugui@2.0.0": {
+      "name": "com.unity.ugui",
+      "displayName": "Unity UI",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.ugui@cec3688a7c38",
+      "fingerprint": "cec3688a7c389f738c34a22466c335d237d36690",
+      "editorCompatibility": "2019.2.0a1",
+      "version": "2.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.textmeshpro@5.0.0": {
+      "name": "com.unity.textmeshpro",
+      "displayName": "TextMeshPro",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.textmeshpro@53f43edfd2e0",
+      "fingerprint": "53f43edfd2e0bf2438ca6e2038ba12107a181253",
+      "editorCompatibility": "2023.2.0a1",
+      "version": "5.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.feature.mobile@1.0.0": {
+      "name": "com.unity.feature.mobile",
+      "displayName": "Mobile",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.feature.mobile@00f8a2b6a6fb",
+      "fingerprint": "00f8a2b6a6fb9c01b3e6d2ada669d3dc43945443",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
     "com.unity.multiplayer.center@1.0.0": {
       "name": "com.unity.multiplayer.center",
       "displayName": "Multiplayer Center",
@@ -289,6 +318,46 @@
       "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.modules.hierarchycore",
       "version": "1.0.0",
       "source": "builtin",
+      "testable": false
+    },
+    "com.unity.mobile.android-logcat@1.4.7": {
+      "name": "com.unity.mobile.android-logcat",
+      "displayName": "Android Logcat",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.mobile.android-logcat@a8a404f035b3",
+      "fingerprint": "a8a404f035b303ff953fa7f31d3ad5ac477e5f2b",
+      "editorCompatibility": "2021.3.0a1",
+      "version": "1.4.7",
+      "source": "registry",
+      "testable": false
+    },
+    "com.unity.adaptiveperformance@5.1.6": {
+      "name": "com.unity.adaptiveperformance",
+      "displayName": "Adaptive Performance",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.adaptiveperformance@de279be9c429",
+      "fingerprint": "de279be9c4293882b05e64612e641789bcfc5a00",
+      "editorCompatibility": "2022.3.0f1",
+      "version": "5.1.6",
+      "source": "registry",
+      "testable": false
+    },
+    "com.unity.mobile.notifications@2.4.3": {
+      "name": "com.unity.mobile.notifications",
+      "displayName": "Mobile Notifications",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.mobile.notifications@53b584f4d5cd",
+      "fingerprint": "53b584f4d5cd88da2db71d29ada9c2ef4512a037",
+      "editorCompatibility": "2021.3.0a1",
+      "version": "2.4.3",
+      "source": "registry",
+      "testable": false
+    },
+    "com.unity.profiling.core@1.0.2": {
+      "name": "com.unity.profiling.core",
+      "displayName": "Unity Profiling Core API",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.profiling.core@aac7b93912bc",
+      "fingerprint": "aac7b93912bc5df5fe06b04ff1b758493cdc2346",
+      "editorCompatibility": "2020.1.0a1",
+      "version": "1.0.2",
+      "source": "registry",
       "testable": false
     }
   }

@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639075312172456489
-    m_Hash: 205969706
+      ticks: 639075324930639190
+    m_Hash: 2109928612
   m_LockFileStatus:
     m_FilePath: D:/Unity/Projects/MobileMaze/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639075312179879309
-    m_Hash: 3025046548
+      ticks: 639075325442897640
+    m_Hash: 965163791
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -22,6 +22,283 @@ m_LocalPackages:
 m_ProjectPath: D:/Unity/Projects/MobileMaze/Packages
 m_EditorVersion: 6000.0.67f1 (78a1c2bbeb6a)
 m_ResolvedPackages:
+- packageId: com.unity.ugui@2.0.0
+  testable: 0
+  isDirectDependency: 1
+  version: 2.0.0
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.ugui@cec3688a7c38
+  assetPath: Packages/com.unity.ugui
+  name: com.unity.ugui
+  displayName: Unity UI
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: "Unity UI is a set of tools for developing user interfaces for games
+    and applications. It is a GameObject-based UI system that uses Components and
+    the Game View to arrange, position, and style user interfaces. \u200B You cannot
+    use Unity UI to create or change user interfaces in the Unity Editor."
+  errors: []
+  versions:
+    all:
+    - 2.0.0
+    compatible:
+    - 2.0.0
+    recommended: 2.0.0
+    deprecated: []
+  dependencies:
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  keywords:
+  - UI
+  - ugui
+  - Unity UI
+  - Canvas
+  - TextMeshPro
+  - TextMesh Pro
+  - Text
+  - TMP
+  - SDF
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 2.0.0
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: cec3688a7c389f738c34a22466c335d237d36690
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 2.0.0
+    minimumUnityVersion: 2019.2
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.textmeshpro@5.0.0
+  testable: 0
+  isDirectDependency: 1
+  version: 5.0.0
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.textmeshpro@53f43edfd2e0
+  assetPath: Packages/com.unity.textmeshpro
+  name: com.unity.textmeshpro
+  displayName: TextMeshPro
+  author:
+    name: 
+    email: 
+    url: 
+  category: Text Rendering
+  type: shim
+  description: This package is no longer supported. TextMeshPro functionalities are
+    now included in the com.unity.ugui package. To continue using them, consider
+    adding it to your project dependencies.
+  errors: []
+  versions:
+    all:
+    - 5.0.0
+    compatible: []
+    recommended: 
+    deprecated: []
+  dependencies:
+  - name: com.unity.ugui
+    version: 2.0.0
+  resolvedDependencies:
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 1
+    deprecationMessage: This package is no longer supported. TextMeshPro functionalities
+      are now included in the com.unity.ugui package. To continue using them, consider
+      adding it to your project dependencies.
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: 53f43edfd2e0bf2438ca6e2038ba12107a181253
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 
+    minimumUnityVersion: 2023.2
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.feature.mobile@1.0.0
+  testable: 0
+  isDirectDependency: 1
+  version: 1.0.0
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.feature.mobile@00f8a2b6a6fb
+  assetPath: Packages/com.unity.feature.mobile
+  name: com.unity.feature.mobile
+  displayName: Mobile
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: feature
+  description: Optimize your apps for mobile devices and provide a performant experience
+    for your users. Includes utilities for debugging on device and support for notifications.
+  errors: []
+  versions:
+    all:
+    - 1.0.0
+    compatible:
+    - 1.0.0
+    recommended: 1.0.0
+    deprecated: []
+  dependencies:
+  - name: com.unity.mobile.android-logcat
+    version: default
+  - name: com.unity.adaptiveperformance
+    version: default
+  - name: com.unity.mobile.notifications
+    version: default
+  resolvedDependencies:
+  - name: com.unity.mobile.android-logcat
+    version: 1.4.7
+  - name: com.unity.adaptiveperformance
+    version: 5.1.6
+  - name: com.unity.profiling.core
+    version: 1.0.2
+  - name: com.unity.modules.subsystems
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.mobile.notifications
+    version: 2.4.3
+  - name: com.unity.modules.androidjni
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 1.0.0
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"quickstart":"https://docs.unity3d.com/Documentation/Manual/MobileFeature.html"}'
+  assetStore:
+    productId: 
+  fingerprint: 00f8a2b6a6fb9c01b3e6d2ada669d3dc43945443
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.0.0
+    minimumUnityVersion: 
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
 - packageId: com.unity.multiplayer.center@1.0.0
   testable: 0
   isDirectDependency: 1
@@ -2836,6 +3113,503 @@ m_ResolvedPackages:
     compatibilityLevel: 0
     minimumPackageVersion: 1.0.0
     minimumUnityVersion: 
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.mobile.android-logcat@1.4.7
+  testable: 0
+  isDirectDependency: 0
+  version: 1.4.7
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.mobile.android-logcat@a8a404f035b3
+  assetPath: Packages/com.unity.mobile.android-logcat
+  name: com.unity.mobile.android-logcat
+  displayName: Android Logcat
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: "Android Logcat package provides support for:\n - Android log messages\n
+    - Android application memory statistics\n - Input injection\n - Android Screen
+    Capture\n - Android Screen Recorder\n - Stacktrace Utility\n\nClick the 'View
+    documentation' link above for more information.\n\nThe window can be accessed
+    in Unity Editor via 'Window > Analysis > Android Logcat', or simply by pressing
+    'Alt+6' on Windows or 'Option+6' on macOS. \n\nMake sure to have Android module
+    loaded and switch to Android build target in 'Build Settings' window if the menu
+    doesn't exist."
+  errors: []
+  versions:
+    all:
+    - 0.1.5-preview
+    - 0.2.7-preview
+    - 1.0.0
+    - 1.0.1-preview
+    - 1.0.3-preview
+    - 1.1.0
+    - 1.1.1
+    - 1.2.0-preview
+    - 1.2.0
+    - 1.2.1
+    - 1.2.2
+    - 1.2.3
+    - 1.3.2
+    - 1.4.0
+    - 1.4.1
+    - 1.4.2
+    - 1.4.3
+    - 1.4.4
+    - 1.4.5
+    - 1.4.6
+    - 1.4.7
+    compatible:
+    - 1.4.7
+    recommended: 1.4.7
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords:
+  - Mobile
+  - Android
+  - Logcat
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 639050135327230000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.mobile.android-logcat@1.4/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.com/Unity-Technologies/com.unity.mobile.logcat.git
+    revision: 8ae94bddd85a94f9e795a4469eced355ec7338e8
+    path: 
+  unityLifecycle:
+    version: 1.4.7
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Fixes & Improvements\n - Periodic device queries
+    no longer occur when no devices are connected and Logcat window is unfocused.\n
+    - Replaced deprecated Mono APIs with CoreCLR-compatible APIs."}'
+  assetStore:
+    productId: 
+  fingerprint: a8a404f035b303ff953fa7f31d3ad5ac477e5f2b
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.4.7
+    minimumUnityVersion: 2021.3
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.adaptiveperformance@5.1.6
+  testable: 0
+  isDirectDependency: 0
+  version: 5.1.6
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.adaptiveperformance@de279be9c429
+  assetPath: Packages/com.unity.adaptiveperformance
+  name: com.unity.adaptiveperformance
+  displayName: Adaptive Performance
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: 'The Adaptive Performance package provides an API to get feedback
+    about the thermal and power state of mobile devices, enabling applications to
+    make performance-relevant adaptions at runtime.
+
+
+    For instruction on how
+    to use samples, please read the documentation.
+
+
+    By installing this package,
+    you agree to the terms and conditions of the Unity End User License Agreement
+    found under "View licenses" above.'
+  errors: []
+  versions:
+    all:
+    - 0.2.0-preview.1
+    - 1.0.0
+    - 1.0.1
+    - 1.1.0-preview.2
+    - 1.1.0-preview.3
+    - 1.1.0-preview.4
+    - 1.1.0-preview.5
+    - 1.1.0-preview.7
+    - 1.1.0
+    - 1.1.6
+    - 1.1.9
+    - 1.1.10
+    - 1.2.0
+    - 1.2.2
+    - 1.2.3
+    - 2.0.0-preview.1
+    - 2.0.0-preview.2
+    - 2.0.0-preview.4
+    - 2.0.0-preview.7
+    - 2.0.0-preview.8
+    - 2.0.0-preview.9
+    - 2.0.0-preview.10
+    - 2.0.0-preview.11
+    - 2.0.0
+    - 2.0.1
+    - 2.0.2
+    - 2.1.0
+    - 2.1.1
+    - 2.2.1
+    - 2.2.3
+    - 2.2.4
+    - 3.0.0-pre.2
+    - 3.0.0
+    - 3.0.2
+    - 3.0.3
+    - 4.0.0-pre.1
+    - 4.0.0
+    - 4.0.1
+    - 5.0.0-pre.1
+    - 5.0.0-pre.2
+    - 5.0.0-pre.3
+    - 5.0.0-pre.4
+    - 5.0.0
+    - 5.0.1
+    - 5.0.2
+    - 5.1.0
+    - 5.1.1
+    - 5.1.2
+    - 5.1.3
+    - 5.1.4
+    - 5.1.5
+    - 5.1.6
+    compatible:
+    - 5.1.6
+    recommended: 5.1.6
+    deprecated: []
+  dependencies:
+  - name: com.unity.profiling.core
+    version: 1.0.2
+  - name: com.unity.modules.subsystems
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.profiling.core
+    version: 1.0.2
+  - name: com.unity.modules.subsystems
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  keywords:
+  - mobile
+  - adaptive
+  - performance
+  - utility
+  - utilities
+  - core
+  - samsung
+  - ap
+  - provider
+  - subsystem
+  - indexer
+  - scaler
+  - vrr
+  - boost
+  - profiles
+  - cluster
+  - clusterinfo
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638926834513700000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.adaptiveperformance@5.1/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.adaptiveperformance.git
+    revision: f397ac29f7a6eb45e585039a13df33143f580c99
+    path: 
+  unityLifecycle:
+    version: 5.1.6
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Fixed\n- Truncate long scaler name to display \"...\"
+    to be consistent with other editor styles."}'
+  assetStore:
+    productId: 
+  fingerprint: de279be9c4293882b05e64612e641789bcfc5a00
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 5.1.6
+    minimumUnityVersion: 2022.3.0f1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.mobile.notifications@2.4.3
+  testable: 0
+  isDirectDependency: 0
+  version: 2.4.3
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.mobile.notifications@53b584f4d5cd
+  assetPath: Packages/com.unity.mobile.notifications
+  name: com.unity.mobile.notifications
+  displayName: Mobile Notifications
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: 'Mobile Notifications package adds support for scheduling local repeatable
+    or one-time notifications on iOS and Android.
+
+
+    On iOS receiving of push
+    notifications is also supported.'
+  errors: []
+  versions:
+    all:
+    - 1.0.0-preview.4
+    - 1.0.0-preview.5
+    - 1.0.0-preview.7
+    - 1.0.0-preview.8
+    - 1.0.0-preview.9
+    - 1.0.0-preview.10
+    - 1.0.0-preview.13
+    - 1.0.0-preview.17
+    - 1.0.0-preview.21
+    - 1.0.0-preview.23
+    - 1.0.2
+    - 1.0.3-preview
+    - 1.0.3-preview.3
+    - 1.0.3-preview.4
+    - 1.0.3-preview.5
+    - 1.0.3-preview.6
+    - 1.0.3
+    - 1.0.4-preview.1
+    - 1.0.4-preview.2
+    - 1.0.4-preview.3
+    - 1.0.4-preview.4
+    - 1.0.4-preview.5
+    - 1.0.4-preview.6
+    - 1.0.4-preview.9
+    - 1.1.0-preview
+    - 1.2.0-preview
+    - 1.2.1-preview
+    - 1.3.0
+    - 1.3.2
+    - 1.4.1
+    - 1.4.2
+    - 1.4.3
+    - 1.4.4
+    - 2.0.0
+    - 2.0.1
+    - 2.0.2
+    - 2.1.0
+    - 2.1.1
+    - 2.2.0
+    - 2.2.1
+    - 2.2.2
+    - 2.3.0
+    - 2.3.1
+    - 2.3.2
+    - 2.4.0
+    - 2.4.1
+    - 2.4.2
+    - 2.4.3
+    compatible:
+    - 2.4.2
+    - 2.4.3
+    recommended: 2.4.3
+    deprecated: []
+  dependencies:
+  - name: com.unity.modules.androidjni
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.modules.androidjni
+    version: 1.0.0
+  keywords:
+  - Android
+  - iOS
+  - Notifications
+  - Mobile
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 639053841021550000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.mobile.notifications@2.4/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.com/Unity-Technologies/com.unity.mobile.notifications.git
+    revision: 988d7f7297ea83fb03f29f32f56cc105aaa6b0bd
+    path: 
+  unityLifecycle:
+    version: 2.4.2
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Changes & Improvements:\n- [iOS] iOSNotificationCenter.OpenNotificationSettings
+    now directly opens the notification settings page for your app on iOS 15.4 and
+    later.\n\n### Fixes:\n- [iOS] Fixed push notifications not being ignored by the
+    package when they are disabled in settings."}'
+  assetStore:
+    productId: 
+  fingerprint: 53b584f4d5cd88da2db71d29ada9c2ef4512a037
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 2.4.2
+    minimumUnityVersion: 2021.3
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.profiling.core@1.0.2
+  testable: 0
+  isDirectDependency: 0
+  version: 1.0.2
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.profiling.core@aac7b93912bc
+  assetPath: Packages/com.unity.profiling.core
+  name: com.unity.profiling.core
+  displayName: Unity Profiling Core API
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: asset
+  description: The Unity Profiling Core package provides an API for code instrumentation
+    markup, and for profiling statistic collection.
+  errors: []
+  versions:
+    all:
+    - 0.1.0-preview.1
+    - 0.2.0-preview.1
+    - 0.2.1-preview.1
+    - 1.0.0-pre.1
+    - 1.0.0
+    - 1.0.2
+    - 1.0.3
+    compatible:
+    - 1.0.2
+    - 1.0.3
+    recommended: 1.0.3
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords:
+  - profiler
+  - profiling
+  - api
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 637828752310000000
+  documentationUrl: 
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/profiler.git
+    revision: 2189ba14439d76a4083f59fae87163b4bdfd49c2
+    path: 
+  unityLifecycle:
+    version: 1.0.2
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: aac7b93912bc5df5fe06b04ff1b758493cdc2346
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.0.2
+    minimumUnityVersion: 2020.1
   compliance:
     status: 0
     violation:
