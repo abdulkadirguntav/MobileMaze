@@ -24,12 +24,13 @@ public class LightingEvolution : MonoBehaviour
     [Tooltip("Renk geçişinin ne kadar keskin veya pürüzsüz olacağını ayarlar")]
     public float lerpSpeed = 1f;
 
+    [Tooltip("Emission (Parlaklık) gücü çarpanı (Örn: 2-3 neon etkisi verir)")]
+    public float emissionIntensity = 2.0f;
+
     private Color targetColor;
 
     private Material tunnelMat;
     private Material obstacleMat;
-    private Color originalTunnelColor;
-    private Color originalObstacleColor;
     private Color originalTunnelEmission;
     private Color originalObstacleEmission;
     private bool materialsCached = false;
@@ -44,13 +45,11 @@ public class LightingEvolution : MonoBehaviour
 
             if (tunnelMat != null)
             {
-                originalTunnelColor = tunnelMat.HasProperty("_BaseColor") ? tunnelMat.GetColor("_BaseColor") : tunnelMat.color;
                 if (tunnelMat.HasProperty("_EmissionColor")) originalTunnelEmission = tunnelMat.GetColor("_EmissionColor");
             }
 
             if (obstacleMat != null)
             {
-                originalObstacleColor = obstacleMat.HasProperty("_BaseColor") ? obstacleMat.GetColor("_BaseColor") : obstacleMat.color;
                 if (obstacleMat.HasProperty("_EmissionColor")) originalObstacleEmission = obstacleMat.GetColor("_EmissionColor");
             }
             materialsCached = true;
@@ -84,18 +83,14 @@ public class LightingEvolution : MonoBehaviour
     {
         if (mat == null) return;
 
-        // Base/Main Color
-        Color currentColor = mat.HasProperty("_BaseColor") ? mat.GetColor("_BaseColor") : mat.color;
-        Color newColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * lerpSpeed);
-        
-        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", newColor);
-        else mat.color = newColor;
-
-        // Emission Color
+        // SADECE Emission Color değişir, Base Color sabit kalır
         if (mat.HasProperty("_EmissionColor"))
         {
+            // Intensity (Parlaklık) çarpanını ekliyoruz
+            Color targetEmission = targetColor * Mathf.Pow(2.0f, emissionIntensity);
+            
             Color currentEmission = mat.GetColor("_EmissionColor");
-            mat.SetColor("_EmissionColor", Color.Lerp(currentEmission, targetColor, Time.deltaTime * lerpSpeed));
+            mat.SetColor("_EmissionColor", Color.Lerp(currentEmission, targetEmission, Time.deltaTime * lerpSpeed));
         }
     }
 
@@ -147,10 +142,11 @@ public class LightingEvolution : MonoBehaviour
     {
         if (mat == null) return;
         
-        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
-        else mat.color = color;
-
-        if (mat.HasProperty("_EmissionColor")) mat.SetColor("_EmissionColor", color);
+        if (mat.HasProperty("_EmissionColor"))
+        {
+            Color targetEmission = color * Mathf.Pow(2.0f, emissionIntensity);
+            mat.SetColor("_EmissionColor", targetEmission);
+        }
     }
 
     // 3. Oyun Restart veya Quit olduğunda materyalleri orijinal rengine sıfırla
@@ -170,17 +166,11 @@ public class LightingEvolution : MonoBehaviour
 
         if (tunnelMat != null)
         {
-            if (tunnelMat.HasProperty("_BaseColor")) tunnelMat.SetColor("_BaseColor", originalTunnelColor);
-            else tunnelMat.color = originalTunnelColor;
-
             if (tunnelMat.HasProperty("_EmissionColor")) tunnelMat.SetColor("_EmissionColor", originalTunnelEmission);
         }
 
         if (obstacleMat != null)
         {
-            if (obstacleMat.HasProperty("_BaseColor")) obstacleMat.SetColor("_BaseColor", originalObstacleColor);
-            else obstacleMat.color = originalObstacleColor;
-
             if (obstacleMat.HasProperty("_EmissionColor")) obstacleMat.SetColor("_EmissionColor", originalObstacleEmission);
         }
     }

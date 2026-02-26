@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639076080798867454
-    m_Hash: 1839109101
+      ticks: 639077093715550003
+    m_Hash: 3853782575
   m_LockFileStatus:
     m_FilePath: D:/Unity/Projects/MobileMaze/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 639076080798897394
-    m_Hash: 2522022050
+      ticks: 639077093715579871
+    m_Hash: 3162269975
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
@@ -323,6 +323,132 @@ m_ResolvedPackages:
   editorCompatibility:
     compatibilityLevel: 0
     minimumPackageVersion: 1.0.0
+    minimumUnityVersion: 6000.0
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.render-pipelines.universal@17.0.4
+  testable: 0
+  isDirectDependency: 1
+  version: 17.0.4
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.render-pipelines.universal@df81894179af
+  assetPath: Packages/com.unity.render-pipelines.universal
+  name: com.unity.render-pipelines.universal
+  displayName: Universal Render Pipeline
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: The Universal Render Pipeline (URP) is a prebuilt Scriptable Render
+    Pipeline, made by Unity. URP provides artist-friendly workflows that let you
+    quickly and easily create optimized graphics across a range of platforms, from
+    mobile to high-end consoles and PCs.
+  errors: []
+  versions:
+    all:
+    - 17.0.4
+    compatible:
+    - 17.0.4
+    recommended: 17.0.4
+    deprecated: []
+  dependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.4
+  - name: com.unity.shadergraph
+    version: 17.0.4
+  - name: com.unity.render-pipelines.universal-config
+    version: 17.0.3
+  resolvedDependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.4
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.collections
+    version: 2.6.2
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  - name: com.unity.modules.physics
+    version: 1.0.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  - name: com.unity.rendering.light-transport
+    version: 1.0.1
+  - name: com.unity.shadergraph
+    version: 17.0.4
+  - name: com.unity.searcher
+    version: 4.9.3
+  - name: com.unity.render-pipelines.universal-config
+    version: 17.0.3
+  keywords:
+  - graphics
+  - performance
+  - rendering
+  - mobile
+  - render
+  - pipeline
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 17.0.4
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: df81894179af1febe20f30de8dcfc243b7cf9775
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 17.0.4
     minimumUnityVersion: 6000.0
   compliance:
     status: 0
@@ -3238,6 +3364,353 @@ m_ResolvedPackages:
       scopePatternExpression: 
       message: 
       readMoreLink: 
+- packageId: com.unity.render-pipelines.core@17.0.4
+  testable: 0
+  isDirectDependency: 0
+  version: 17.0.4
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.render-pipelines.core@372337a8824c
+  assetPath: Packages/com.unity.render-pipelines.core
+  name: com.unity.render-pipelines.core
+  displayName: Scriptable Render Pipeline Core
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: SRP Core makes it easier to create or customize a Scriptable Render
+    Pipeline (SRP). SRP Core contains reusable code, including boilerplate code for
+    working with platform-specific graphics APIs, utility functions for common rendering
+    operations, and  shader libraries. The code in SRP Core is use by the High Definition
+    Render Pipeline (HDRP) and Universal Render Pipeline (URP). If you are creating
+    a custom SRP from scratch or customizing a prebuilt SRP, using SRP Core will
+    save you time.
+  errors: []
+  versions:
+    all:
+    - 17.0.4
+    compatible:
+    - 17.0.4
+    recommended: 17.0.4
+    deprecated: []
+  dependencies:
+  - name: com.unity.burst
+    version: 1.8.20
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.collections
+    version: 2.4.3
+  - name: com.unity.modules.physics
+    version: 1.0.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.rendering.light-transport
+    version: 1.0.1
+  resolvedDependencies:
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.collections
+    version: 2.6.2
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  - name: com.unity.modules.physics
+    version: 1.0.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  - name: com.unity.rendering.light-transport
+    version: 1.0.1
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 17.0.4
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: 372337a8824c6f3a7bd89f9e4d6311e61ea059d2
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 17.0.4
+    minimumUnityVersion: 6000.0
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.shadergraph@17.0.4
+  testable: 0
+  isDirectDependency: 0
+  version: 17.0.4
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.shadergraph@e444d011dd07
+  assetPath: Packages/com.unity.shadergraph
+  name: com.unity.shadergraph
+  displayName: Shader Graph
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: The Shader Graph package adds a visual Shader editing tool to Unity.
+    You can use this tool to create Shaders in a visual way instead of writing code.
+    Specific render pipelines can implement specific graph features. Currently, both
+    the High Definition Rendering Pipeline and the Universal Rendering Pipeline support
+    Shader Graph.
+  errors: []
+  versions:
+    all:
+    - 17.0.4
+    compatible:
+    - 17.0.4
+    recommended: 17.0.4
+    deprecated: []
+  dependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.4
+  - name: com.unity.searcher
+    version: 4.9.3
+  resolvedDependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.4
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.collections
+    version: 2.6.2
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  - name: com.unity.modules.physics
+    version: 1.0.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  - name: com.unity.rendering.light-transport
+    version: 1.0.1
+  - name: com.unity.searcher
+    version: 4.9.3
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 17.0.4
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: e444d011dd07e420c7b5a99d9b70964731674fcf
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 17.0.4
+    minimumUnityVersion: 6000.0
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.render-pipelines.universal-config@17.0.3
+  testable: 0
+  isDirectDependency: 0
+  version: 17.0.3
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.render-pipelines.universal-config@dd206bf35d04
+  assetPath: Packages/com.unity.render-pipelines.universal-config
+  name: com.unity.render-pipelines.universal-config
+  displayName: Universal Render Pipeline Config
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: Configuration files for the Universal Render Pipeline.
+  errors: []
+  versions:
+    all:
+    - 17.0.3
+    compatible:
+    - 17.0.3
+    recommended: 17.0.3
+    deprecated: []
+  dependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.3
+  resolvedDependencies:
+  - name: com.unity.render-pipelines.core
+    version: 17.0.4
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.ugui
+    version: 2.0.0
+  - name: com.unity.modules.ui
+    version: 1.0.0
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.collections
+    version: 2.6.2
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  - name: com.unity.modules.physics
+    version: 1.0.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  - name: com.unity.rendering.light-transport
+    version: 1.0.1
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 17.0.3
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: dd206bf35d0451204981fdb31d4c6831a0ee2a7e
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 17.0.3
+    minimumUnityVersion: 6000.0
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
 - packageId: com.unity.test-framework@1.6.0
   testable: 0
   isDirectDependency: 0
@@ -3738,6 +4211,728 @@ m_ResolvedPackages:
       scopePatternExpression: 
       message: 
       readMoreLink: 
+- packageId: com.unity.searcher@4.9.3
+  testable: 0
+  isDirectDependency: 0
+  version: 4.9.3
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.searcher@1e17ce91558d
+  assetPath: Packages/com.unity.searcher
+  name: com.unity.searcher
+  displayName: Searcher
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: General search window for use in the Editor. First target use is for
+    GraphView node search.
+  errors: []
+  versions:
+    all:
+    - 4.0.0-preview
+    - 4.0.0
+    - 4.0.7-preview
+    - 4.0.7
+    - 4.0.8-preview
+    - 4.0.9
+    - 4.1.0-preview
+    - 4.1.0
+    - 4.2.0
+    - 4.3.0
+    - 4.3.1
+    - 4.3.2
+    - 4.6.0-preview
+    - 4.7.0-preview
+    - 4.9.1
+    - 4.9.2
+    - 4.9.3
+    - 4.9.4
+    compatible:
+    - 4.9.3
+    - 4.9.4
+    recommended: 4.9.4
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords:
+  - search
+  - searcher
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638731478077990000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.searcher@4.9/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.searcher.git
+    revision: 6fad693b6604ae7175b59ebb4990d9a0b6c1d012
+    path: 
+  unityLifecycle:
+    version: 4.9.3
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"- Fixed a bug where spaces are removed when highlighted.\n-
+    Changed VisualSplitter to twoPaneSplitView and updated indentation"}'
+  assetStore:
+    productId: 
+  fingerprint: 1e17ce91558d1d9127554adc03d275f39a7466a2
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 4.9.3
+    minimumUnityVersion: 2019.1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.burst@1.8.27
+  testable: 0
+  isDirectDependency: 0
+  version: 1.8.27
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.burst@973857688024
+  assetPath: Packages/com.unity.burst
+  name: com.unity.burst
+  displayName: Burst
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: Burst is a compiler that translates from IL/.NET bytecode to highly
+    optimized native code using LLVM.
+  errors: []
+  versions:
+    all:
+    - 0.2.4-preview.5
+    - 0.2.4-preview.7
+    - 0.2.4-preview.11
+    - 0.2.4-preview.12
+    - 0.2.4-preview.13
+    - 0.2.4-preview.14
+    - 0.2.4-preview.15
+    - 0.2.4-preview.16
+    - 0.2.4-preview.17
+    - 0.2.4-preview.18
+    - 0.2.4-preview.19
+    - 0.2.4-preview.20
+    - 0.2.4-preview.21
+    - 0.2.4-preview.22
+    - 0.2.4-preview.23
+    - 0.2.4-preview.24
+    - 0.2.4-preview.25
+    - 0.2.4-preview.30
+    - 0.2.4-preview.31
+    - 0.2.4-preview.33
+    - 0.2.4-preview.34
+    - 0.2.4-preview.37
+    - 0.2.4-preview.41
+    - 0.2.4-preview.45
+    - 0.2.4-preview.48
+    - 0.2.4-preview.50
+    - 1.1.0-preview.2
+    - 1.1.0-preview.3
+    - 1.1.0-preview.4
+    - 1.1.1
+    - 1.1.2
+    - 1.1.3-preview.3
+    - 1.2.0-preview.1
+    - 1.2.0-preview.5
+    - 1.2.0-preview.6
+    - 1.2.0-preview.8
+    - 1.2.0-preview.9
+    - 1.2.0-preview.10
+    - 1.2.0-preview.11
+    - 1.2.0-preview.12
+    - 1.2.0
+    - 1.2.1
+    - 1.2.2
+    - 1.2.3
+    - 1.3.0-preview.1
+    - 1.3.0-preview.2
+    - 1.3.0-preview.3
+    - 1.3.0-preview.4
+    - 1.3.0-preview.5
+    - 1.3.0-preview.6
+    - 1.3.0-preview.7
+    - 1.3.0-preview.8
+    - 1.3.0-preview.9
+    - 1.3.0-preview.10
+    - 1.3.0-preview.11
+    - 1.3.0-preview.12
+    - 1.3.0-preview.13
+    - 1.3.0
+    - 1.3.1
+    - 1.3.2
+    - 1.3.3
+    - 1.3.4
+    - 1.3.5
+    - 1.3.6
+    - 1.3.7
+    - 1.3.8
+    - 1.3.9
+    - 1.4.0-pre.1
+    - 1.4.0-preview.1
+    - 1.4.0-preview.2
+    - 1.4.0-preview.3
+    - 1.4.0-preview.4
+    - 1.4.0-preview.5
+    - 1.4.1-pre.1
+    - 1.4.1-pre.2
+    - 1.4.1
+    - 1.4.2
+    - 1.4.3
+    - 1.4.4-preview.1
+    - 1.4.4-preview.2
+    - 1.4.4
+    - 1.4.5
+    - 1.4.6
+    - 1.4.7
+    - 1.4.8
+    - 1.4.9
+    - 1.4.11
+    - 1.5.0-pre.3
+    - 1.5.0-pre.4
+    - 1.5.0-pre.5
+    - 1.5.0
+    - 1.5.1
+    - 1.5.2
+    - 1.5.3
+    - 1.5.4
+    - 1.5.5
+    - 1.5.6-preview.1
+    - 1.5.6
+    - 1.6.0-pre.2
+    - 1.6.0-pre.3
+    - 1.6.0-pre.4
+    - 1.6.0
+    - 1.6.1
+    - 1.6.2
+    - 1.6.3
+    - 1.6.4
+    - 1.6.5
+    - 1.6.6
+    - 1.7.0-pre.1
+    - 1.7.0
+    - 1.7.1
+    - 1.7.2
+    - 1.7.3
+    - 1.7.4
+    - 1.8.0-pre.1
+    - 1.8.0-pre.2
+    - 1.8.0
+    - 1.8.1
+    - 1.8.2
+    - 1.8.3
+    - 1.8.4
+    - 1.8.7
+    - 1.8.8
+    - 1.8.9
+    - 1.8.10
+    - 1.8.11
+    - 1.8.12
+    - 1.8.13
+    - 1.8.14
+    - 1.8.15
+    - 1.8.16
+    - 1.8.17
+    - 1.8.18
+    - 1.8.19
+    - 1.8.20
+    - 1.8.21
+    - 1.8.22
+    - 1.8.23
+    - 1.8.24
+    - 1.8.25
+    - 1.8.26
+    - 1.8.27
+    - 1.8.28
+    compatible:
+    - 1.8.27
+    - 1.8.28
+    recommended: 1.8.28
+    deprecated: []
+  dependencies:
+  - name: com.unity.mathematics
+    version: 1.2.1
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 639014373111530000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.burst@1.8/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/burst.git
+    revision: eaf781d05ea047ecc656c7ff7ccfd01e75e12e51
+    path: 
+  unityLifecycle:
+    version: 1.8.27
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Added\n\n### Removed\n\n### Changed\n- Changed
+    minimum Editor version to 2022.3.\n\n### Fixed\n- Fixed Burst runtime Mac binaries
+    not being signed.\n- Fixed a bug where `Span<T>.Fill` used with spans of smaller-than-int
+    integer types would cause out-of-bounds writes (leading to data corruption and
+    segfaults)\n\n### Known Issues\n\n### Purpose"}'
+  assetStore:
+    productId: 
+  fingerprint: 973857688024e0c6019b60f7a3b403e8e467c4d0
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.8.27
+    minimumUnityVersion: 2022.3
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.mathematics@1.3.2
+  testable: 0
+  isDirectDependency: 0
+  version: 1.3.2
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.mathematics@8017b507cc74
+  assetPath: Packages/com.unity.mathematics
+  name: com.unity.mathematics
+  displayName: Mathematics
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: assets
+  description: Unity's C# SIMD math library providing vector types and math functions
+    with a shader like syntax.
+  errors: []
+  versions:
+    all:
+    - 0.0.12-preview.2
+    - 0.0.12-preview.5
+    - 0.0.12-preview.8
+    - 0.0.12-preview.10
+    - 0.0.12-preview.11
+    - 0.0.12-preview.13
+    - 0.0.12-preview.17
+    - 0.0.12-preview.19
+    - 0.0.12-preview.20
+    - 1.0.0-preview.1
+    - 1.0.1
+    - 1.1.0-preview.1
+    - 1.1.0
+    - 1.2.1
+    - 1.2.4
+    - 1.2.5
+    - 1.2.6
+    - 1.3.1
+    - 1.3.2
+    - 1.3.3
+    compatible:
+    - 1.3.2
+    - 1.3.3
+    recommended: 1.3.3
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords:
+  - unity
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638409134840000000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.mathematics@1.3/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.com/Unity-Technologies/Unity.Mathematics.git
+    revision: 1695a8503482a3131be78cc26308a93f82c05b04
+    path: 
+  unityLifecycle:
+    version: 1.3.2
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Fixed\n* Fixed `math.hash` crash when using IL2CPP
+    builds on Arm 32 bit devices.\n* Fixed obsolete method usage warnings for `MatrixDrawer.CanCacheInspectorGUI`
+    and `PrimitiveVectorDrawer.CanCacheInspectorGUI` in UNITY_2023_2_OR_NEWER.\n*
+    Updated minimum editor version to 2021.3"}'
+  assetStore:
+    productId: 
+  fingerprint: 8017b507cc74bf0a1dd14b18aa860569f807314d
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.3.2
+    minimumUnityVersion: 2021.3
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.collections@2.6.2
+  testable: 0
+  isDirectDependency: 0
+  version: 2.6.2
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.collections@aea9d3bd5e19
+  assetPath: Packages/com.unity.collections
+  name: com.unity.collections
+  displayName: Collections
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: A C# collections library providing data structures that can be used
+    in jobs, and optimized by Burst compiler.
+  errors: []
+  versions:
+    all:
+    - 0.0.9-preview.1
+    - 0.0.9-preview.2
+    - 0.0.9-preview.3
+    - 0.0.9-preview.4
+    - 0.0.9-preview.5
+    - 0.0.9-preview.6
+    - 0.0.9-preview.7
+    - 0.0.9-preview.8
+    - 0.0.9-preview.9
+    - 0.0.9-preview.10
+    - 0.0.9-preview.11
+    - 0.0.9-preview.12
+    - 0.0.9-preview.13
+    - 0.0.9-preview.14
+    - 0.0.9-preview.15
+    - 0.0.9-preview.16
+    - 0.0.9-preview.17
+    - 0.0.9-preview.18
+    - 0.0.9-preview.19
+    - 0.0.9-preview.20
+    - 0.1.0-preview
+    - 0.1.1-preview
+    - 0.2.0-preview.13
+    - 0.3.0-preview.0
+    - 0.4.0-preview.6
+    - 0.5.0-preview.9
+    - 0.5.1-preview.11
+    - 0.5.2-preview.8
+    - 0.6.0-preview.9
+    - 0.7.0-preview.2
+    - 0.7.1-preview.3
+    - 0.8.0-preview.5
+    - 0.9.0-preview.5
+    - 0.9.0-preview.6
+    - 0.11.0-preview.17
+    - 0.12.0-preview.13
+    - 0.14.0-preview.16
+    - 0.15.0-preview.21
+    - 0.17.0-preview.18
+    - 1.0.0-pre.3
+    - 1.0.0-pre.5
+    - 1.0.0-pre.6
+    - 1.1.0
+    - 1.2.3-pre.1
+    - 1.2.3
+    - 1.2.4
+    - 1.3.1
+    - 1.4.0
+    - 1.5.1
+    - 1.5.2
+    - 2.1.0-exp.4
+    - 2.1.0-pre.2
+    - 2.1.0-pre.6
+    - 2.1.0-pre.11
+    - 2.1.0-pre.18
+    - 2.1.1
+    - 2.1.4
+    - 2.2.0
+    - 2.2.1
+    - 2.3.0-exp.1
+    - 2.3.0-pre.3
+    - 2.4.0-exp.2
+    - 2.4.0-pre.2
+    - 2.4.0-pre.5
+    - 2.4.0
+    - 2.4.1
+    - 2.4.2
+    - 2.4.3
+    - 2.5.0-exp.1
+    - 2.5.0-pre.2
+    - 2.5.1
+    - 2.5.2
+    - 2.5.3
+    - 2.5.7
+    - 2.6.0-exp.2
+    - 2.6.0-pre.3
+    - 2.6.0-pre.4
+    - 2.6.2
+    - 2.6.3
+    - 2.6.4
+    - 2.6.5
+    compatible:
+    - 2.6.2
+    - 2.6.3
+    - 2.6.4
+    - 2.6.5
+    recommended: 2.6.5
+    deprecated: []
+  dependencies:
+  - name: com.unity.burst
+    version: 1.8.23
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.test-framework
+    version: 1.4.6
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.0.3
+  resolvedDependencies:
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  keywords:
+  - dots
+  - collections
+  - unity
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638950336031850000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.collections@2.6/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/dots.git
+    revision: 34a49c9a68f70872c0a108dbef6cdea306d6b593
+    path: 
+  unityLifecycle:
+    version: 2.6.2
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Changed\n\n* Updated Burst dependency to version
+    1.8.23."}'
+  assetStore:
+    productId: 
+  fingerprint: aea9d3bd5e19f2a90fc3a39919974a5f3613a159
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 2.6.2
+    minimumUnityVersion: 2022.3.20f1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.rendering.light-transport@1.0.1
+  testable: 0
+  isDirectDependency: 0
+  version: 1.0.1
+  source: 2
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.rendering.light-transport@9bd588f963c0
+  assetPath: Packages/com.unity.rendering.light-transport
+  name: com.unity.rendering.light-transport
+  displayName: Unity Light Transport Library
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: Unity Light Transport Library exposes reusable code for writing light
+    transport algorithms such as raytracing or pathtracing
+  errors: []
+  versions:
+    all:
+    - 1.0.1
+    compatible:
+    - 1.0.1
+    recommended: 1.0.1
+    deprecated: []
+  dependencies:
+  - name: com.unity.collections
+    version: 2.2.0
+  - name: com.unity.mathematics
+    version: 1.2.4
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.collections
+    version: 2.6.2
+  - name: com.unity.burst
+    version: 1.8.27
+  - name: com.unity.mathematics
+    version: 1.3.2
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.nuget.mono-cecil
+    version: 1.11.5
+  - name: com.unity.test-framework.performance
+    version: 3.2.0
+  - name: com.unity.modules.terrain
+    version: 1.0.0
+  keywords:
+  - raytracing
+  - pathtracing
+  - monte-carlo
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 0
+  isAssetStorePackage: 0
+  datePublishedTicks: 0
+  documentationUrl: 
+  hasRepository: 0
+  repository:
+    type: 
+    url: 
+    revision: 
+    path: 
+  unityLifecycle:
+    version: 1.0.1
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: 
+  assetStore:
+    productId: 
+  fingerprint: 9bd588f963c0ca6105f0978f9cfc66444032a804
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.0.1
+    minimumUnityVersion: 2023.3.0b1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
 - packageId: com.unity.ext.nunit@2.0.5
   testable: 0
   isDirectDependency: 0
@@ -3897,6 +5092,242 @@ m_ResolvedPackages:
     compatibilityLevel: 0
     minimumPackageVersion: 1.0.2
     minimumUnityVersion: 2020.1
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.nuget.mono-cecil@1.11.5
+  testable: 0
+  isDirectDependency: 0
+  version: 1.11.5
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.nuget.mono-cecil@d78732e851eb
+  assetPath: Packages/com.unity.nuget.mono-cecil
+  name: com.unity.nuget.mono-cecil
+  displayName: Mono Cecil
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: 'The mono cecil library from https://www.nuget.org/packages/Mono.Cecil/
+
+
+    This
+    package is intended for internal Unity use only. Most Unity users will be better
+    suited using the existing community tooling.
+
+    To avoid assembly clashes,
+    please use this package if you intend to use Mono.Cecil.'
+  errors: []
+  versions:
+    all:
+    - 0.1.6-preview.2
+    - 1.0.0-preview.1
+    - 1.10.0-preview.1
+    - 1.10.1-preview.1
+    - 1.10.1
+    - 1.10.2
+    - 1.11.4
+    - 1.11.5
+    - 1.11.6
+    compatible:
+    - 1.11.5
+    - 1.11.6
+    recommended: 1.11.6
+    deprecated: []
+  dependencies: []
+  resolvedDependencies: []
+  keywords: []
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638729992509040000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.nuget.mono-cecil@1.11/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.nuget.mono-cecil.git
+    revision: ab40507b5d82f57a4f34b6d0eacca1d6b170341d
+    path: 
+  unityLifecycle:
+    version: 1.11.5
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"* This is a verified release of the com.unity.nuget.mono-cecil
+    with embedded dlls of mono-cecil\n* Updated Cecil to 0.11.5 with a grafted patch
+    from this bug fix PR (https://github.com/jbevain/cecil/pull/914)"}'
+  assetStore:
+    productId: 
+  fingerprint: d78732e851eb42273c8e4d97993d3a94b207e570
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 1.11.5
+    minimumUnityVersion: 2019.4
+  compliance:
+    status: 0
+    violation:
+      scopePatternExpression: 
+      message: 
+      readMoreLink: 
+- packageId: com.unity.test-framework.performance@3.2.0
+  testable: 0
+  isDirectDependency: 0
+  version: 3.2.0
+  source: 1
+  resolvedPath: D:\Unity\Projects\MobileMaze\Library\PackageCache\com.unity.test-framework.performance@0840f58e4562
+  assetPath: Packages/com.unity.test-framework.performance
+  name: com.unity.test-framework.performance
+  displayName: Performance testing API
+  author:
+    name: 
+    email: 
+    url: 
+  category: 
+  type: 
+  description: Package that extends Unity Test Framework package. Adds performance
+    testing capabilities and collects configuration metadata.
+  errors: []
+  versions:
+    all:
+    - 0.1.27-preview
+    - 0.1.29-preview
+    - 0.1.31-preview
+    - 0.1.33-preview
+    - 0.1.34-preview
+    - 0.1.36-preview
+    - 0.1.37-preview
+    - 0.1.39-preview
+    - 0.1.40-preview
+    - 0.1.41-preview
+    - 0.1.42-preview
+    - 0.1.44-preview
+    - 0.1.45-preview
+    - 0.1.47-preview
+    - 0.1.48-preview
+    - 0.1.49-preview
+    - 0.1.50-preview
+    - 1.0.4-preview
+    - 1.0.6-preview
+    - 1.0.9-preview
+    - 1.1.2-preview
+    - 1.2.0-preview
+    - 1.2.1-preview
+    - 1.2.3-preview
+    - 1.2.5-preview
+    - 1.2.6-preview
+    - 1.3.0-preview
+    - 1.3.1-preview
+    - 1.3.2-preview
+    - 1.3.3-preview
+    - 2.0.1-preview
+    - 2.0.2-preview
+    - 2.0.3-preview
+    - 2.0.6-preview
+    - 2.0.7-preview
+    - 2.0.8-preview
+    - 2.0.9-preview
+    - 2.1.0-preview
+    - 2.2.0-preview
+    - 2.3.1-preview
+    - 2.4.1-preview
+    - 2.5.1-preview
+    - 2.6.0-preview
+    - 2.7.0-preview
+    - 2.8.0-preview
+    - 2.8.1-preview
+    - 3.0.0-pre.1
+    - 3.0.0-pre.2
+    - 3.0.1
+    - 3.0.2
+    - 3.0.3
+    - 3.1.0
+    - 3.2.0
+    compatible:
+    - 3.2.0
+    recommended: 3.2.0
+    deprecated: []
+  dependencies:
+  - name: com.unity.test-framework
+    version: 1.1.33
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  resolvedDependencies:
+  - name: com.unity.test-framework
+    version: 1.6.0
+  - name: com.unity.ext.nunit
+    version: 2.0.5
+  - name: com.unity.modules.imgui
+    version: 1.0.0
+  - name: com.unity.modules.jsonserialize
+    version: 1.0.0
+  keywords:
+  - performance
+  - test
+  registry:
+    id: main
+    name: 
+    url: https://packages.unity.com
+    scopes: []
+    isDefault: 1
+    capabilities: 7
+    configSource: 0
+    compliance:
+      status: 0
+      violations: []
+  hideInEditor: 1
+  entitlements:
+    licensingModel: 1
+  isAssetStorePackage: 0
+  datePublishedTicks: 638936561440790000
+  documentationUrl: https://docs.unity3d.com/Packages/com.unity.test-framework.performance@3.2/manual/index.html
+  hasRepository: 1
+  repository:
+    type: git
+    url: https://github.cds.internal.unity3d.com/unity/com.unity.test-framework.performance.git
+    revision: fe7ade132131103e7608be564921ab8de35fd8e4
+    path: 
+  unityLifecycle:
+    version: 3.2.0
+    nextVersion: 
+    recommendedVersion: 
+    isDeprecated: 0
+    deprecationMessage: 
+  isDeprecated: 0
+  deprecationMessage: 
+  git:
+    hash: 
+    revision: 
+  upmReserved: '{"changelog":"### Added\n\n- Improved render threading mode reporting"}'
+  assetStore:
+    productId: 
+  fingerprint: 0840f58e45624f7677679a0f8b6a5137689e607f
+  editorCompatibility:
+    compatibilityLevel: 0
+    minimumPackageVersion: 3.2.0
+    minimumUnityVersion: 2020.3
   compliance:
     status: 0
     violation:
