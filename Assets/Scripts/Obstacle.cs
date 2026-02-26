@@ -1,70 +1,206 @@
 using UnityEngine;
 using System.Collections;
 
+public enum ObstacleBehavior
+{
+    Standard,
+    FakeOut,
+    PistonLeft,
+    PistonRight,
+    Guillotine,
+    DiagonalSpinner,
+    SuddenBlockade,
+    SuddenOpening_Wall,
+    SuddenOpening_Disappear,
+    AnimatedCheckerboard,
+    AnimatedSnake
+}
+
 public class Obstacle : MonoBehaviour
 {
-    [Header("Fake-out Settings")]
-    public bool isFakeOut = false;
+    [Header("State")]
+    public ObstacleBehavior currentBehavior = ObstacleBehavior.Standard;
     
     private Transform playerTransform;
     private GameManager gameManager;
     private bool hasTriggered = false;
     private Vector3 targetWorldPosition;
+    private Vector3 initialWorldPosition;
     private bool isLerping = false;
 
-    // Dinamik hesaplanan değerler
+    [Header("Animation")]
+    public float animOffset = 0f;
+    public float animSpeed = 5f;
+
+    private static readonly Vector2[] snakePath = new Vector2[] {
+        new Vector2(-1, 2), new Vector2(1, 2), new Vector2(1, 0),
+        new Vector2(1, -2), new Vector2(-1, -2), new Vector2(-1, 0)
+    };
+
     private float triggerDistance;
     private float lerpSpeed;
-    private float wobbleDuration = 0.1f; // Zorluk Artışı: Daha da hızlı anticipiation
+    private float wobbleDuration = 0.1f;
+    
+    private Vector3 originalScale;
 
-    public void Initialize(Transform player, GameManager gm)
+    void Awake()
+    {
+        originalScale = transform.localScale;
+    }
+
+    public void Initialize(Transform player, GameManager gm, ObstacleBehavior behavior, Vector3 targetPos)
     {
         playerTransform = player;
         gameManager = gm;
         hasTriggered = false;
         isLerping = false;
-        isFakeOut = false; 
-        transform.localScale = Vector3.one; 
+        currentBehavior = behavior;
+        targetWorldPosition = targetPos;
+        transform.localScale = originalScale;
+        transform.localRotation = Quaternion.identity;
+
+        SetupInitialState();
     }
 
     public void SetFakeOutTarget(Vector3 worldTargetPos)
     {
-        isFakeOut = true;
+        currentBehavior = ObstacleBehavior.FakeOut;
         targetWorldPosition = worldTargetPos;
+    }
+
+    public void SetAnimOffset(float offset)
+    {
+        animOffset = offset;
+    }
+
+    private void SetupInitialState()
+    {
+        switch (currentBehavior)
+        {
+            case ObstacleBehavior.Standard:
+            case ObstacleBehavior.FakeOut:
+            case ObstacleBehavior.SuddenOpening_Wall:
+                transform.position = targetWorldPosition;
+                break;
+            case ObstacleBehavior.SuddenOpening_Disappear:
+                transform.position = targetWorldPosition;
+                break;
+            case ObstacleBehavior.PistonLeft:
+                initialWorldPosition = targetWorldPosition + Vector3.left * 10f;
+                transform.position = initialWorldPosition;
+                break;
+            case ObstacleBehavior.PistonRight:
+                initialWorldPosition = targetWorldPosition + Vector3.right * 10f;
+                transform.position = initialWorldPosition;
+                break;
+            case ObstacleBehavior.Guillotine:
+                initialWorldPosition = targetWorldPosition + Vector3.up * 10f;
+                transform.position = initialWorldPosition;
+                break;
+            case ObstacleBehavior.DiagonalSpinner:
+                transform.position = targetWorldPosition;
+                transform.localRotation = Quaternion.Euler(0, 0, 45); // 45 derece eğik
+                break;
+            case ObstacleBehavior.SuddenBlockade:
+                // Çok yukarıdan veya aşağıdan gelebilir
+                initialWorldPosition = targetWorldPosition + Vector3.down * 15f;
+                transform.position = initialWorldPosition;
+                break;
+            case ObstacleBehavior.AnimatedCheckerboard:
+                initialWorldPosition = targetWorldPosition;
+                animOffset = initialWorldPosition.x > 0 ? 0f : Mathf.PI;
+                animSpeed = 15f; 
+                break;
+            case ObstacleBehavior.AnimatedSnake:
+                initialWorldPosition = targetWorldPosition;
+                animSpeed = 15f; 
+                break;
+        }
     }
 
     void Update()
     {
         if (playerTransform == null) return;
 
-        // Karakterin gerisinde kaldıysa, kendini havuza iade et
+        // Karakterin gerisinde kaldıysa yok et
         if (transform.position.z < playerTransform.position.z - 10f)
         {
             gameObject.SetActive(false);
             return;
         }
 
-        // Eğer Fake-out objesiyse ve henüz tetiklenmediyse
-        if (isFakeOut && !hasTriggered)
+        float distance = transform.position.z - playerTransform.position.z;
+
+        // Animasyon Davranışları
+        if (currentBehavior == ObstacleBehavior.DiagonalSpinner)
         {
-            float distance = transform.position.z - playerTransform.position.z;
-            
-            // Dinamik Zorluk Tetikleyicisi (Son Milisaniye)
-            // Oyuncunun hızı * TimeAllowance = gereken mesafe
-            triggerDistance = gameManager.CurrentPlayerSpeed * gameManager.fakeOutTimeAllowance;
-            
-            if (distance <= triggerDistance && distance > 0)
-            {
-                // Lerp hızını da curve üzerinden al (Snap geçiş hissi)
-                lerpSpeed = gameManager.fakeOutLerpSpeedCurve.Evaluate(gameManager.score);
-                StartCoroutine(FakeOutRoutine());
-            }
+            transform.Rotate(0, 0, 180f * Time.deltaTime);
+        }
+        else if (currentBehavior == ObstacleBehavior.AnimatedCheckerboard)
+        {
+            float newX = Mathf.Cos(Time.time * animSpeed + animOffset) * 1f;
+            transform.position = new Vector3(newX, initialWorldPosition.y, transform.position.z);
+        }
+        else if (currentBehavior == ObstacleBehavior.AnimatedSnake)
+        {
+            float currentT = (Time.time * animSpeed + animOffset) % 6f;
+            if (currentT < 0) currentT += 6f;
+            int index1 = Mathf.FloorToInt(currentT);
+            int index2 = (index1 + 1) % 6;
+            float lerpT = currentT - index1;
+            Vector2 pos2D = Vector2.Lerp(snakePath[index1], snakePath[index2], lerpT);
+            transform.position = new Vector3(pos2D.x, pos2D.y, transform.position.z);
         }
 
-        // Lerp ile yeni (hedef) yerine geçiş
+        if (!hasTriggered && distance > 0)
+        {
+            CheckBehaviors(distance);
+        }
+
         if (isLerping)
         {
             transform.position = Vector3.Lerp(transform.position, targetWorldPosition, Time.deltaTime * lerpSpeed);
+        }
+    }
+
+    private void CheckBehaviors(float distance)
+    {
+        switch (currentBehavior)
+        {
+            case ObstacleBehavior.FakeOut:
+                triggerDistance = gameManager.CurrentPlayerSpeed * gameManager.fakeOutTimeAllowance;
+                if (distance <= triggerDistance)
+                {
+                    lerpSpeed = gameManager.fakeOutLerpSpeedCurve.Evaluate(gameManager.score);
+                    StartCoroutine(FakeOutRoutine());
+                }
+                break;
+            case ObstacleBehavior.PistonLeft:
+            case ObstacleBehavior.PistonRight:
+            case ObstacleBehavior.Guillotine:
+                if (distance <= 30f) // 30 birim kala uzan/düş
+                {
+                    lerpSpeed = 20f;
+                    isLerping = true;
+                    hasTriggered = true;
+                }
+                break;
+            case ObstacleBehavior.SuddenBlockade:
+                if (distance <= 15f) // 15 birim kala aniden yerleş (çok hızlı)
+                {
+                    lerpSpeed = 40f;
+                    isLerping = true;
+                    hasTriggered = true;
+                }
+                break;
+            case ObstacleBehavior.SuddenOpening_Disappear:
+                if (distance <= 15f) // 15 birim kala geçiş açılsın
+                {
+                    // Blok kaybolsun veya küçülsün
+                    StartCoroutine(ShrinkAndDisable());
+                    hasTriggered = true;
+                }
+                break;
         }
     }
 
@@ -72,7 +208,6 @@ public class Obstacle : MonoBehaviour
     {
         hasTriggered = true;
         
-        // 1. Wobble (Titreme - Anticipation)
         Vector3 origScale = transform.localScale;
         float elapsed = 0f;
         while (elapsed < wobbleDuration)
@@ -86,7 +221,19 @@ public class Obstacle : MonoBehaviour
         }
         transform.localScale = origScale; 
 
-        // 2. Yeni Boş Slot'a Zıpla
         isLerping = true;
+    }
+
+    private IEnumerator ShrinkAndDisable()
+    {
+        float elapsed = 0f;
+        Vector3 startScale = transform.localScale;
+        while (elapsed < 0.2f)
+        {
+            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, elapsed / 0.2f);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        gameObject.SetActive(false);
     }
 }

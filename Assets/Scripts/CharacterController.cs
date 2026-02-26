@@ -3,14 +3,25 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     [SerializeField] private float forwardSpeed = 5f;
-    [SerializeField] private float laneChangeSpeed = 10f;
+    [SerializeField] private float laneChangeSpeed = 50f; // Çok keskin/anında refleks için artırıldı
     
     // Tünel 2x2 olduğu için X ve Y'de gidebileceği maksimum ve minimum noktalar (1 birim aralıklarla)
     // Karakter 0,0 merkezli değilse bu değerleri Unity Editor'dan başlangıç pozisyonuna göre -0.5 ve 0.5 gibi ayarlayabilirsiniz.
-    [SerializeField] private float minX = -0.5f;
-    [SerializeField] private float maxX = 0.5f;
-    [SerializeField] private float minY = -0.5f;
-    [SerializeField] private float maxY = 0.5f;
+    [SerializeField] private float minX = -1f;
+    [SerializeField] private float maxX = 1f;
+    [SerializeField] private float minY = -2f; // 3 satır (-2, 0, 2)
+    [SerializeField] private float maxY = 2f;
+
+    [Header("Power-Ups")]
+    public float slowMotionDuration = 5f;
+    public float dashDuration = 3f;
+    public float dashSpeedMultiplier = 3f;
+    
+    private bool isSlowMotionActive = false;
+    private bool isDashActive = false;
+
+    [Header("Power-Up Status")]
+    public bool isInvincible = false;
 
     private Vector2 targetXY;
     private Vector2 startTouchPosition;
@@ -19,7 +30,7 @@ public class CharacterController : MonoBehaviour
 
     public void SetForwardSpeed(float speed)
     {
-        forwardSpeed = speed;
+        forwardSpeed = isDashActive ? speed * dashSpeedMultiplier : speed;
     }
 
     void Start()
@@ -42,6 +53,9 @@ public class CharacterController : MonoBehaviour
         newPos.x = Mathf.Lerp(newPos.x, targetXY.x, laneChangeSpeed * Time.deltaTime);
         newPos.y = Mathf.Lerp(newPos.y, targetXY.y, laneChangeSpeed * Time.deltaTime);
         transform.position = newPos;
+
+        // Power-Up tuşlarını dinle
+        HandlePowerUps();
     }
 
     private void HandleInput()
@@ -96,13 +110,60 @@ public class CharacterController : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
-        // Her kaydırmada/basışta hedef pozisyonu 1 birim kaydır
-        targetXY.x += direction.x;
-        targetXY.y += direction.y;
+        // Her kaydırmada/basışta hedef pozisyonu 2 birim kaydır
+        targetXY.x += direction.x * 2f;
+        targetXY.y += direction.y * 2f;
 
-        // Hedef pozisyonu 2x2 tünel dışına çıkmaması için sınırlandır
+        // Hedef pozisyonu 2x3 tünel dışına çıkmaması için sınırlandır
         targetXY.x = Mathf.Clamp(targetXY.x, minX, maxX);
         targetXY.y = Mathf.Clamp(targetXY.y, minY, maxY);
+    }
+
+    private void HandlePowerUps()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !isSlowMotionActive)
+        {
+            StartCoroutine(SlowMotionRoutine());
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2) && !isDashActive)
+        {
+            StartCoroutine(DestructiveDashRoutine());
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ClearPathPowerUp();
+        }
+    }
+
+    private System.Collections.IEnumerator SlowMotionRoutine()
+    {
+        isSlowMotionActive = true;
+        Time.timeScale = 0.5f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+        yield return new WaitForSecondsRealtime(slowMotionDuration); 
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
+        isSlowMotionActive = false;
+    }
+
+    private System.Collections.IEnumerator DestructiveDashRoutine()
+    {
+        isDashActive = true;
+        isInvincible = true;
+        
+        yield return new WaitForSeconds(dashDuration);
+        
+        isInvincible = false;
+        isDashActive = false;
+    }
+
+    private void ClearPathPowerUp()
+    {
+        ObstacleSpawner spawner = FindObjectOfType<ObstacleSpawner>();
+        if (spawner != null)
+        {
+            spawner.ClearPath(50f);
+        }
     }
 
     // Engellerin `Is Trigger` işaretli bir collider'a sahip olması gerekir.
@@ -111,6 +172,14 @@ public class CharacterController : MonoBehaviour
         // Temas edilen obje "Obstacle" tagine sahipse
         if (other.CompareTag("Obstacle"))
         {
+            if (isInvincible)
+            {
+                // Yıkıcı Dash aktifse engeli yok et
+                other.gameObject.SetActive(false);
+                // TODO: Particle efekti eklenebilir
+                return;
+            }
+
             GameManager gm = FindObjectOfType<GameManager>();
             if (gm != null)
             {
@@ -124,6 +193,12 @@ public class CharacterController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Obstacle"))
         {
+            if (isInvincible)
+            {
+                collision.gameObject.SetActive(false);
+                return;
+            }
+
             GameManager gm = FindObjectOfType<GameManager>();
             if (gm != null)
             {

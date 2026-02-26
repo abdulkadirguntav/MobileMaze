@@ -10,6 +10,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.ext.nunit": {
+      "version": "2.0.5",
+      "depth": 2,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.feature.mobile": {
       "version": "1.0.0",
       "depth": 0,
@@ -19,6 +25,15 @@
         "com.unity.adaptiveperformance": "5.1.6",
         "com.unity.mobile.notifications": "2.4.3"
       }
+    },
+    "com.unity.ide.visualstudio": {
+      "version": "2.0.27",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.33"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.unity.mobile.android-logcat": {
       "version": "1.4.7",
@@ -50,6 +65,16 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
+    },
+    "com.unity.test-framework": {
+      "version": "1.6.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.ext.nunit": "2.0.3",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      }
     },
     "com.unity.textmeshpro": {
       "version": "5.0.0",

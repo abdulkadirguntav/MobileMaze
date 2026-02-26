@@ -9,13 +9,32 @@
     "C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.67f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\BuiltInPackagesCombined.sha1"
   ],
   "outputs": {
-    "com.unity.ugui@2.0.0": {
-      "name": "com.unity.ugui",
-      "displayName": "Unity UI",
-      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.ugui@cec3688a7c38",
-      "fingerprint": "cec3688a7c389f738c34a22466c335d237d36690",
-      "editorCompatibility": "2019.2.0a1",
-      "version": "2.0.0",
+    "com.unity.feature.mobile@1.0.0": {
+      "name": "com.unity.feature.mobile",
+      "displayName": "Mobile",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.feature.mobile@00f8a2b6a6fb",
+      "fingerprint": "00f8a2b6a6fb9c01b3e6d2ada669d3dc43945443",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
+    "com.unity.ide.visualstudio@2.0.27": {
+      "name": "com.unity.ide.visualstudio",
+      "displayName": "Visual Studio Editor",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.ide.visualstudio@dc1ddd4f09b6",
+      "fingerprint": "dc1ddd4f09b68a99b5dc00185f3b7551294e28a7",
+      "editorCompatibility": "2021.3.0a1",
+      "version": "2.0.27",
+      "source": "registry",
+      "testable": false
+    },
+    "com.unity.multiplayer.center@1.0.0": {
+      "name": "com.unity.multiplayer.center",
+      "displayName": "Multiplayer Center",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.multiplayer.center@f3fb577b3546",
+      "fingerprint": "f3fb577b3546594b97b8cc34307cd621f60f1c73",
+      "editorCompatibility": "6000.0.0a1",
+      "version": "1.0.0",
       "source": "builtin",
       "testable": false
     },
@@ -29,22 +48,13 @@
       "source": "builtin",
       "testable": false
     },
-    "com.unity.feature.mobile@1.0.0": {
-      "name": "com.unity.feature.mobile",
-      "displayName": "Mobile",
-      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.feature.mobile@00f8a2b6a6fb",
-      "fingerprint": "00f8a2b6a6fb9c01b3e6d2ada669d3dc43945443",
-      "version": "1.0.0",
-      "source": "builtin",
-      "testable": false
-    },
-    "com.unity.multiplayer.center@1.0.0": {
-      "name": "com.unity.multiplayer.center",
-      "displayName": "Multiplayer Center",
-      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.multiplayer.center@f3fb577b3546",
-      "fingerprint": "f3fb577b3546594b97b8cc34307cd621f60f1c73",
-      "editorCompatibility": "6000.0.0a1",
-      "version": "1.0.0",
+    "com.unity.ugui@2.0.0": {
+      "name": "com.unity.ugui",
+      "displayName": "Unity UI",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.ugui@cec3688a7c38",
+      "fingerprint": "cec3688a7c389f738c34a22466c335d237d36690",
+      "editorCompatibility": "2019.2.0a1",
+      "version": "2.0.0",
       "source": "builtin",
       "testable": false
     },
@@ -320,6 +330,16 @@
       "source": "builtin",
       "testable": false
     },
+    "com.unity.test-framework@1.6.0": {
+      "name": "com.unity.test-framework",
+      "displayName": "Test Framework",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.test-framework@24afccc4ed24",
+      "fingerprint": "24afccc4ed2476477802ab9f82162fa9da7933dc",
+      "editorCompatibility": "6000.0.44f1",
+      "version": "1.6.0",
+      "source": "builtin",
+      "testable": false
+    },
     "com.unity.mobile.android-logcat@1.4.7": {
       "name": "com.unity.mobile.android-logcat",
       "displayName": "Android Logcat",
@@ -348,6 +368,16 @@
       "editorCompatibility": "2021.3.0a1",
       "version": "2.4.3",
       "source": "registry",
+      "testable": false
+    },
+    "com.unity.ext.nunit@2.0.5": {
+      "name": "com.unity.ext.nunit",
+      "displayName": "Custom NUnit",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.ext.nunit@031a54704bff",
+      "fingerprint": "031a54704bffe39e6a0324909f8eaa4565bdebf2",
+      "editorCompatibility": "2019.4.0a1",
+      "version": "2.0.5",
+      "source": "builtin",
       "testable": false
     },
     "com.unity.profiling.core@1.0.2": {
