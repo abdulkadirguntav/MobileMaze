@@ -9,15 +9,21 @@ public class ObstacleSpawner : MonoBehaviour
     public Transform playerTransform;
 
     [Header("Pool Settings")]
-    public int poolSize = 60; // Grid arttığı için havuzu büyütüyoruz
+    public int poolSize = 100; // Artan hız ve mesafe için havuz kapasitesi 100'e çıkarıldı
     private List<GameObject> obstaclePool = new List<GameObject>();
 
+    [Header("Power-Up Settings")]
+    [Tooltip("Sırasıyla eklenecek PowerUp prefableri")]
+    public GameObject[] powerUpPrefabs;
+    [Range(0f, 1f)] public float powerUpSpawnChance = 0.05f;
+    private List<GameObject> powerUpPool = new List<GameObject>();
+
     [Header("Spawn Settings")]
-    public float spawnAheadDistance = 50f;
+    public float spawnAheadDistance = 200f; // Pop-in hissini yok etmek için 200'e çıkarıldı
     
     private float nextSpawnZ;
     private int deathZigZagRemaining = 0;
-    private int lastEmptySlot = -1;
+    private int lastSafeSlot = 2; // Başlangıçta orta sol güvenli varsayalım
 
     // 2x3 Grid Merkez Noktaları (0, 1 = Üst | 2, 3 = Orta | 4, 5 = Alt)
     // 2 birimlik aralıklarla ölçeklendirilmiş hali
@@ -54,7 +60,15 @@ public class ObstacleSpawner : MonoBehaviour
         {
             SpawnObstaclePattern(nextSpawnZ);
             
+            // İki engel dalgası arasındaki boş mesafe (orta nokta)
             float currentInterval = gameManager.spawnIntervalCurve.Evaluate(gameManager.score);
+            
+            // %5 (veya ayarlanan) ihtimalle engel dalgaları arasına Power-Up spawnla
+            if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && Random.value < powerUpSpawnChance)
+            {
+                SpawnPowerUp(nextSpawnZ + currentInterval * 0.5f);
+            }
+
             nextSpawnZ += currentInterval;
         }
     }
@@ -110,16 +124,24 @@ public class ObstacleSpawner : MonoBehaviour
         }
 
         // --- Normal Standart Spawn (1 ile 4 arası küp) ---
-        int obstacleCount = Random.Range(1, 4); // 6 slot olduğu için 3-4 e kadar çıkabilir
+        int obstacleCount = Random.Range(1, 4); 
         if (phase >= 3) obstacleCount = Random.Range(2, 5); 
 
-        List<int> slots = new List<int> { 0, 1, 2, 3, 4, 5 };
-        ShuffleList(slots);
+        // 1. Garantili Güvenli slot seç (bir öncekine komşu)
+        int newSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
+        lastSafeSlot = newSafeSlot;
+
+        // 2. Kalan slotları (safe slot hariç) bul
+        List<int> availableSlots = new List<int>();
+        for (int i = 0; i < 6; i++) {
+            if (i != newSafeSlot) availableSlots.Add(i);
+        }
+        ShuffleList(availableSlots);
 
         List<GameObject> spawned = new List<GameObject>();
         for (int i = 0; i < obstacleCount; i++)
         {
-            SpawnSingleObstacle(slots[i], zPosition, ObstacleBehavior.Standard, out GameObject ob);
+            SpawnSingleObstacle(availableSlots[i], zPosition, ObstacleBehavior.Standard, out GameObject ob);
             if (ob != null) spawned.Add(ob);
         }
 
@@ -128,8 +150,8 @@ public class ObstacleSpawner : MonoBehaviour
         {
             Obstacle obs = spawned[Random.Range(0, spawned.Count)].GetComponent<Obstacle>();
             
-            // Kullanılmayan boş bir slota (örn: slots[obstacleCount]) geçmesi için FakeOut ayarla
-            int emptySlot = slots[obstacleCount]; 
+            // Kullanılmayan boş bir slota (bu güvenli slot DA OLABİLİR veya kalan başka bir boşluk) fake-out at
+            int emptySlot = availableSlots[obstacleCount]; 
             Vector2 targetPos2D = gridSlots[emptySlot];
             Vector3 fakeOutTarget = new Vector3(transform.position.x + targetPos2D.x, transform.position.y + targetPos2D.y, zPosition);
             
@@ -169,13 +191,13 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void SpawnDeathZigZag(float zPosition)
     {
-        int forcedEmptySlot = GetNextZigZagSlot(lastEmptySlot);
-        lastEmptySlot = forcedEmptySlot;
+        int forcedSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
+        lastSafeSlot = forcedSafeSlot;
         deathZigZagRemaining--;
 
         for (int i = 0; i < 6; i++)
         {
-            if (i != forcedEmptySlot)
+            if (i != forcedSafeSlot)
                 SpawnSingleObstacle(i, zPosition, ObstacleBehavior.Standard, out _);
         }
     }
@@ -183,20 +205,25 @@ public class ObstacleSpawner : MonoBehaviour
     private void InitiateDeathZigZag(float zPosition)
     {
         deathZigZagRemaining = Random.Range(3, 5);
-        lastEmptySlot = Random.Range(0, 6);
         SpawnDeathZigZag(zPosition);
     }
 
     private void SpawnSuddenBlockade(float zPosition)
     {
-        // 4 veya 5 blok aniden belirir
+        // Garantili geçiş için safe slot belirle
+        int forcedSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
+        lastSafeSlot = forcedSafeSlot;
+
         int count = Random.Range(4, 6);
-        List<int> slots = new List<int> { 0, 1, 2, 3, 4, 5 };
-        ShuffleList(slots);
+        List<int> availableSlots = new List<int>();
+        for (int i = 0; i < 6; i++) {
+            if (i != forcedSafeSlot) availableSlots.Add(i);
+        }
+        ShuffleList(availableSlots);
 
         for (int i = 0; i < count; i++)
         {
-            SpawnSingleObstacle(slots[i], zPosition, ObstacleBehavior.SuddenBlockade, out _);
+            SpawnSingleObstacle(availableSlots[i], zPosition, ObstacleBehavior.SuddenBlockade, out _);
         }
     }
 
@@ -270,12 +297,25 @@ public class ObstacleSpawner : MonoBehaviour
         }
     }
 
-    private int GetNextZigZagSlot(int previous)
+    private int GetSafeAdjacentSlot(int previousSlot)
     {
-        // Basit bir yakın slot seçici (Tam karşısına geçebilir veya çapraz ilerleyebilir)
-        List<int> valid = new List<int>();
-        for(int i = 0; i < 6; i++) { if (i != previous) valid.Add(i); }
-        return valid[Random.Range(0, valid.Count)];
+        // 0(SolÜst)   1(SağÜst)
+        // 2(SolOrta)  3(SağOrta)
+        // 4(SolAlt)   5(SağAlt)
+        List<int> validNeighbors = new List<int>();
+
+        switch (previousSlot)
+        {
+            case 0: validNeighbors.AddRange(new int[] { 0, 1, 2, 3 }); break;
+            case 1: validNeighbors.AddRange(new int[] { 0, 1, 2, 3 }); break;
+            case 2: validNeighbors.AddRange(new int[] { 0, 1, 2, 3, 4, 5 }); break;
+            case 3: validNeighbors.AddRange(new int[] { 0, 1, 2, 3, 4, 5 }); break;
+            case 4: validNeighbors.AddRange(new int[] { 2, 3, 4, 5 }); break;
+            case 5: validNeighbors.AddRange(new int[] { 2, 3, 4, 5 }); break;
+            default: return Random.Range(0, 6);
+        }
+
+        return validNeighbors[Random.Range(0, validNeighbors.Count)];
     }
 
     private GameObject GetPooledObstacle()
@@ -296,5 +336,36 @@ public class ObstacleSpawner : MonoBehaviour
             list[i] = list[randomIndex];
             list[randomIndex] = temp;
         }
+    }
+
+    // -- Power-Up Logic --
+
+    private void SpawnPowerUp(float zPosition)
+    {
+        int prefabIndex = Random.Range(0, powerUpPrefabs.Length);
+        GameObject prefabToUse = powerUpPrefabs[prefabIndex];
+        if (prefabToUse == null) return;
+
+        GameObject puObj = GetPooledPowerUp(prefabToUse.name);
+        if (puObj == null)
+        {
+            puObj = Instantiate(prefabToUse, transform);
+            puObj.name = prefabToUse.name; // Tag veya tanımlama için ismi sabitliyoruz
+            powerUpPool.Add(puObj);
+        }
+
+        int rndSlot = Random.Range(0, 6);
+        Vector2 pos = gridSlots[rndSlot];
+        puObj.transform.position = new Vector3(transform.position.x + pos.x, transform.position.y + pos.y, zPosition);
+        puObj.SetActive(true);
+    }
+
+    private GameObject GetPooledPowerUp(string prefabName)
+    {
+        foreach (GameObject obj in powerUpPool)
+        {
+            if (!obj.activeInHierarchy && obj.name == prefabName) return obj;
+        }
+        return null; // Yoksa null döner, yeni üretilir
     }
 }

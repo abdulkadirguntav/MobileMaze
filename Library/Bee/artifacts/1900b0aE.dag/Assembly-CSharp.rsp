@@ -427,6 +427,8 @@
 "Assets/Scripts/LightingEvolution.cs"
 "Assets/Scripts/Obstacle.cs"
 "Assets/Scripts/ObstacleSpawner.cs"
+"Assets/Scripts/PowerUpObtain.cs"
+"Assets/Scripts/Score3DDisplay.cs"
 "Assets/Scripts/ThemeData.cs"
 "Assets/Scripts/ThemeManager.cs"
 "Assets/Scripts/TunnelGenerator.cs"

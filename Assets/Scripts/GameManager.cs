@@ -11,9 +11,15 @@ public class GameManager : MonoBehaviour
     [Tooltip("Dinamik ışıklandırma referansı")]
     public LightingEvolution lightingEvolution;
 
-    [Header("Atmosphere")]
-    [Tooltip("Oyun başında çalacak oyuncuyu irkilten ses")]
-    public AudioClip scareAudioClip;
+    [Header("Audio System")]
+    [Tooltip("Arka plan müziğini çalacak AudioSource")]
+    public AudioSource bgmAudioSource;
+    [Tooltip("Oyuncu öldüğünde çalacak tek seferlik ses")]
+    public AudioClip crashSfxClip;
+
+    [Header("3D Score System")]
+    [Tooltip("Diegetic 3D Skor script referansı")]
+    public Score3DDisplay score3DDisplay;
 
     [Header("Game State")]
     public float score;
@@ -23,8 +29,8 @@ public class GameManager : MonoBehaviour
     [Tooltip("Skora göre engel atılma sıklığı (X: Skor, Y: Z Mesafesi)")]
     public AnimationCurve spawnIntervalCurve = AnimationCurve.Linear(0, 10f, 3000, 3f);
     
-    [Tooltip("Skora göre oyuncu hızı (X: Skor, Y: Hız)")]
-    public AnimationCurve playerSpeedCurve = AnimationCurve.Linear(0, 40f, 3000, 120f);
+    [Tooltip("Skora göre oyuncu hızı (X: Skor, Y: Hız) - Öncekine göre 3 KAT hızlandırıldı")]
+    public AnimationCurve playerSpeedCurve = AnimationCurve.Linear(0, 120f, 3000, 360f);
 
     [Tooltip("Skora göre Fake-out geçiş (Lerp) hızı")]
     public AnimationCurve fakeOutLerpSpeedCurve = AnimationCurve.Linear(0, 30f, 3000, 80f);
@@ -47,9 +53,11 @@ public class GameManager : MonoBehaviour
             startZ = playerTransform.position.z;
         }
 
-        if (scareAudioClip != null)
+        // BGM (Arka Plan Müziği) başlat (Eğer atandıysa)
+        if (bgmAudioSource != null && bgmAudioSource.clip != null)
         {
-            AudioSource.PlayClipAtPoint(scareAudioClip, Camera.main != null ? Camera.main.transform.position : transform.position);
+            bgmAudioSource.loop = true;
+            bgmAudioSource.Play();
         }
         
         // İlk hızı ata
@@ -95,6 +103,13 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
 
         isGameOver = true;
+
+        // BGM durdur ve Çarpışma sesini çal
+        if (bgmAudioSource != null) bgmAudioSource.Stop();
+        if (crashSfxClip != null)
+        {
+            AudioSource.PlayClipAtPoint(crashSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
+        }
         
         // Karakteri durdur
         if (playerController != null)

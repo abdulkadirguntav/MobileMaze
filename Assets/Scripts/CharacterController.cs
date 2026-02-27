@@ -16,6 +16,8 @@ public class CharacterController : MonoBehaviour
     public float slowMotionDuration = 5f;
     public float dashDuration = 3f;
     public float dashSpeedMultiplier = 3f;
+    [Tooltip("Güçlendirme toplandığında çalacak ses")]
+    public AudioClip powerUpCollectSound;
     
     private bool isSlowMotionActive = false;
     private bool isDashActive = false;
@@ -53,9 +55,6 @@ public class CharacterController : MonoBehaviour
         newPos.x = Mathf.Lerp(newPos.x, targetXY.x, laneChangeSpeed * Time.deltaTime);
         newPos.y = Mathf.Lerp(newPos.y, targetXY.y, laneChangeSpeed * Time.deltaTime);
         transform.position = newPos;
-
-        // Power-Up tuşlarını dinle
-        HandlePowerUps();
     }
 
     private void HandleInput()
@@ -119,22 +118,6 @@ public class CharacterController : MonoBehaviour
         targetXY.y = Mathf.Clamp(targetXY.y, minY, maxY);
     }
 
-    private void HandlePowerUps()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && !isSlowMotionActive)
-        {
-            StartCoroutine(SlowMotionRoutine());
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2) && !isDashActive)
-        {
-            StartCoroutine(DestructiveDashRoutine());
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ClearPathPowerUp();
-        }
-    }
-
     private System.Collections.IEnumerator SlowMotionRoutine()
     {
         isSlowMotionActive = true;
@@ -166,9 +149,27 @@ public class CharacterController : MonoBehaviour
         }
     }
 
-    // Engellerin `Is Trigger` işaretli bir collider'a sahip olması gerekir.
+    // Engellerin veya PowerUp'ların `Is Trigger` işaretli bir collider'a sahip olması gerekir.
     private void OnTriggerEnter(Collider other)
     {
+        // Power-Up toplanması
+        if (other.CompareTag("PowerUp"))
+        {
+            PowerUpObtain powerUp = other.GetComponent<PowerUpObtain>();
+            if (powerUp != null)
+            {
+                // Toplama sesini çal
+                if (powerUpCollectSound != null)
+                {
+                    AudioSource.PlayClipAtPoint(powerUpCollectSound, Camera.main != null ? Camera.main.transform.position : transform.position);
+                }
+
+                ActivatePowerUp(powerUp.powerUpType);
+                other.gameObject.SetActive(false); // Objeyi havuz veya sahnede kapat
+            }
+            return;
+        }
+
         // Temas edilen obje "Obstacle" tagine sahipse
         if (other.CompareTag("Obstacle"))
         {
@@ -204,6 +205,22 @@ public class CharacterController : MonoBehaviour
             {
                 gm.GameOver();
             }
+        }
+    }
+
+    private void ActivatePowerUp(PowerUpType pType)
+    {
+        switch (pType)
+        {
+            case PowerUpType.SlowMotion:
+                if (!isSlowMotionActive) StartCoroutine(SlowMotionRoutine());
+                break;
+            case PowerUpType.DestructiveDash:
+                if (!isDashActive) StartCoroutine(DestructiveDashRoutine());
+                break;
+            case PowerUpType.ClearPath:
+                ClearPathPowerUp();
+                break;
         }
     }
 }
