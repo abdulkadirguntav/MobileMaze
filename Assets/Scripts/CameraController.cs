@@ -3,36 +3,43 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [Header("Referanslar")]
-    [Tooltip("Kamera (Camera) objesi. Eğer boşsa GetComponent/Camera.main ile aranacak.")]
+    [Tooltip("Kamera objesi")]
     [SerializeField] private Camera cam;
-    [Tooltip("PlayerController objesi. Eğer boşsa parent/kardeş objelerden bulunacak.")]
+    [Tooltip("Oyuncu kontrolcüsü (Events için)")]
     [SerializeField] private PlayerController player;
 
     [Header("Slide Juice (Kayma Hissi)")]
     [SerializeField] private float slideFovIncrease = 15f;
-    [SerializeField] private float slideTiltX = -10f; // Kamera X ekseninde yukarı bakar (eksi değerler yukarı baktırır)
+    [SerializeField] private float slideTiltX = -10f; // Kamera yukarı bakar
     [SerializeField] private float slideTransitionSpeed = 10f;
 
     [Header("Jump Juice (Zıplama Hissi)")]
-    [SerializeField] private float jumpTiltX = 8f;  // Kamera X ekseninde aşağı bakar
+    [SerializeField] private float jumpTiltX = 8f;  // Kamera aşağı bakar
     [SerializeField] private float landShakeIntensity = 0.2f;
     [SerializeField] private float landShakeDuration = 0.15f;
 
     [Header("Wall-Run Juice (Duvarda Koşma Hissi)")]
-    [SerializeField] private float wallRunRollZ = 15f; // Duvara doğru Roll (Z)
+    [Tooltip("Sağ duvarda sola(+), sol duvarda sağa(-) yatar.")]
+    [SerializeField] private float wallRunRollZ = 15f; 
     [SerializeField] private float wallRunTransitionSpeed = 8f;
 
+    [Header("Overclock Juice (Akış Hissi)")]
+    [SerializeField] private float overclockFovIncrease = 10f;
+    [SerializeField] private float overclockTransitionSpeed = 5f;
+
+    // Temel değerler
     private float baseFov;
     private Quaternion baseLocalRotation;
     
-    // Hedef Değerler (Tweens/Lerps)
+    // Hedef değerler
     private float targetFov;
     private float targetTiltX;
     private float targetRollZ;
 
-    // Shake (Sarsıntı)
+    // Shake
     private float shakeTimer;
     private Vector3 shakeOffset;
+    private float currentLandShakeIntensity;
 
     private Quaternion currentRotationOffset = Quaternion.identity;
 
@@ -50,8 +57,8 @@ public class CameraController : MonoBehaviour
         targetFov = baseFov;
         targetTiltX = 0f;
         targetRollZ = 0f;
+        currentLandShakeIntensity = landShakeIntensity;
 
-        // PlayerController olaylarına abone oluyoruz (Observer Pattern)
         if(player != null)
         {
             player.OnJump += HandleJump;
@@ -81,14 +88,18 @@ public class CameraController : MonoBehaviour
         UpdateJumpRestoration();
         UpdateShake();
 
-        // Pürüzsüz Değer Geçişleri (Smooth Lerp/Slerp)
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFov, Time.deltaTime * slideTransitionSpeed);
+        // Overclock kontrolü
+        float baseTargetFov = player != null && player.isOverclocked ? baseFov + overclockFovIncrease : baseFov;
+        // Slide FOV artışı Overclock FOV artışının üzerine eklenecek
+        float finalTargetFov = player != null && player.isSliding ? baseTargetFov + slideFovIncrease : baseTargetFov;
+
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, finalTargetFov, Time.deltaTime * (player != null && player.isSliding ? slideTransitionSpeed : overclockTransitionSpeed));
 
         Quaternion targetRot = Quaternion.Euler(targetTiltX, 0, targetRollZ);
-        currentRotationOffset = Quaternion.Slerp(currentRotationOffset, targetRot, Time.deltaTime * wallRunTransitionSpeed); // Transition speed adaptif yapılabilir, basitleştirildi.
+        currentRotationOffset = Quaternion.Slerp(currentRotationOffset, targetRot, Time.deltaTime * wallRunTransitionSpeed);
         
         cam.transform.localRotation = baseLocalRotation * currentRotationOffset;
-        cam.transform.localPosition = shakeOffset; // Temel LocalPosition'ın 0,0,0 olduğu varsayılmıştır. Eğer farklıysa baseLocalPosition + shakeOffset yapılmalı.
+        cam.transform.localPosition = shakeOffset; 
     }
 
     private void UpdateShake()
@@ -96,20 +107,19 @@ public class CameraController : MonoBehaviour
         if (shakeTimer > 0)
         {
             shakeTimer -= Time.deltaTime;
-            shakeOffset = UnityEngine.Random.insideUnitSphere * landShakeIntensity * (shakeTimer / landShakeDuration);
+            shakeOffset = UnityEngine.Random.insideUnitSphere * currentLandShakeIntensity * (shakeTimer / landShakeDuration);
         }
         else
         {
             shakeOffset = Vector3.Lerp(shakeOffset, Vector3.zero, Time.deltaTime * 10f);
+            currentLandShakeIntensity = landShakeIntensity; // Reset intensity
         }
     }
 
     private void UpdateJumpRestoration()
     {
-        // Havada ise hafif aşağı bakmayı korur, değilse yavaşça ortaya döner (eğer slide/wallrun değilsek)
         if (targetTiltX == jumpTiltX)
         {
-            // İsteğe bağlı havada süzülme boyunca kademeli toplama
             targetTiltX = Mathf.Lerp(targetTiltX, 0f, Time.deltaTime * 1.5f);
         }
     }
@@ -121,27 +131,27 @@ public class CameraController : MonoBehaviour
 
     private void HandleLand()
     {
-        targetTiltX = 0; // Normale sıfırla
-        shakeTimer = landShakeDuration; // Head shake başlat
+        targetTiltX = 0; 
+        shakeTimer = landShakeDuration; 
+        currentLandShakeIntensity = landShakeIntensity;
     }
 
     private void HandleSlideStart()
     {
-        targetFov = baseFov + slideFovIncrease;
-        targetTiltX = slideTiltX; // X'te negatife giderek yukarı bakar
+        targetTiltX = slideTiltX; 
     }
 
     private void HandleSlideEnd()
     {
-        targetFov = baseFov;
         targetTiltX = 0f;
     }
 
     private void HandleWallRunStart(int direction)
     {
-        // direction: -1 (Sol duvar) -> Kamera sola yatar (pozitif Z roll)
-        // direction: 1 (Sağ duvar) -> Kamera sağa yatar (negatif Z roll)
-        targetRollZ = wallRunRollZ * direction * -1f; 
+        // En sol şerit (Sol duvar: -1) -> Z ekseninde SAĞA (-15 derece) 
+        // En sağ şerit (Sağ duvar: 1) -> Z ekseninde SOLA (+15 derece)
+        // Matematiksel olarak: direction * wallRunRollZ = 1 * 15 = 15 (pozitif = sol)
+        targetRollZ = wallRunRollZ * direction; 
     }
 
     private void HandleWallRunEnd()
@@ -151,10 +161,7 @@ public class CameraController : MonoBehaviour
 
     public void TriggerHitStopShake()
     {
-        // HitStop sarsıntısı için değerleri ayarla (Land shake'ten biraz daha şiddetli)
         shakeTimer = landShakeDuration * 2f;
-        landShakeIntensity *= 1.5f; // Mevcut şiddeti geçici olarak artır, UpdateShake'te sıfırlanmadığı için genel bir değişken olabilir ama basit tutuldu.
-        // Daha iyi bir yaklaşım için Shake Offset hesaplamasında doğrudan bu metoda özel bir sarsıntı verilebilir.
-        // Şimdilik Timer'ı doldurmak yeterli sarsıntı sağlayacaktır.
+        currentLandShakeIntensity = landShakeIntensity * 1.5f; 
     }
 }

@@ -330,7 +330,7 @@ GameObject:
   - component: {fileID: 182840347}
   - component: {fileID: 182840346}
   m_Layer: 0
-  m_Name: obstacleManage
+  m_Name: ObstacleManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -348,30 +348,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2501d9b1ed08a144b9d22646a333ca1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 475300704312451853, guid: b64273bd2f21b0440a9bf81a78136af5, type: 3}
   gameManager: {fileID: 506215859}
-  playerTransform: {fileID: 0}
-  poolSize: 60
+  playerTransform: {fileID: 669709434}
+  labObstaclePrefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   powerUpPrefabs:
   - {fileID: 5689045620432383612, guid: 35b36c13ce5803b4a98f218f9c7f8c8b, type: 3}
   - {fileID: 728096211144311467, guid: a438c4dba0d0dae43821b6781fa1fcb1, type: 3}
   - {fileID: 1839009521987967582, guid: 6e265b0367f6fd049bdca95477dce4ca, type: 3}
   powerUpSpawnChance: 0.05
+  dataCorePrefab: {fileID: 0}
+  dataCoreSpawnChance: 0.05
+  laneDistance: 3
   spawnAheadDistance: 200
   wavesBeforeBreather: 3
-  patternWeights:
-  - pattern: 0
-    weight: 1
-  - pattern: 1
-    weight: 0.5
-  - pattern: 2
-    weight: 0.5
-  - pattern: 3
-    weight: 0.5
-  - pattern: 4
-    weight: 0.5
-  - pattern: 5
-    weight: 0.5
 --- !u!4 &182840347
 Transform:
   m_ObjectHideFlags: 0
@@ -547,6 +540,8 @@ MonoBehaviour:
   landShakeDuration: 0.15
   wallRunRollZ: 15
   wallRunTransitionSpeed: 8
+  overclockFovIncrease: 10
+  overclockTransitionSpeed: 5
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,37 +694,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 669709436}
   playerTransform: {fileID: 669709434}
-  lightingEvolution: {fileID: 144536360}
   bgmAudioSource: {fileID: 669709429}
   crashSfxClip: {fileID: 8300000, guid: 88f8b3ccb0a470a4f9c8d3e3144acbc6, type: 3}
-  score3DDisplay: {fileID: 596308352}
+  overclockSfxClip: {fileID: 0}
+  glassBreakSfxClip: {fileID: 0}
   score: 0
   bestScore: 0
-  currentPhase: 1
-  spawnIntervalCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 20
-      inSlope: 0
-      outSlope: -0.0046666665
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 3000
-      value: 6
-      inSlope: -0.0046666665
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   playerSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -747,6 +717,30 @@ MonoBehaviour:
       value: 40
       inSlope: 0.01
       outSlope: 0.01
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spawnIntervalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 20
+      inSlope: 0
+      outSlope: -0.0046666665
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 3000
+      value: 6
+      inSlope: -0.0046666665
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -779,7 +773,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   fakeOutTimeAllowance: 0.15
+  obstaclesToOverclock: 10
   gameOverPanel: {fileID: 713055471}
+  dataCoresCollected: 0
 --- !u!4 &506215860
 Transform:
   m_ObjectHideFlags: 0
@@ -1318,7 +1314,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
@@ -1361,15 +1357,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f5cc76c69dbd442ba90220460f963a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forwardSpeed: 15
+  baseForwardSpeed: 15
   laneDistance: 3
   sideLerpSpeed: 10
-  jumpForce: 8
+  jumpForce: 14
   gravity: -20
   slideDuration: 1
   slideHeightMultiplier: 0.5
   wallRunDuration: 1.5
   wallRunGravityMultiplier: 0.2
+  overclockSpeedMultiplier: 1.4
+  vaultJumpForceMultiplier: 1.2
+  vaultGravityMultiplier: 1.5
+  dashSpeedMultiplier: 2
 --- !u!1 &713055471
 GameObject:
   m_ObjectHideFlags: 0
@@ -1626,7 +1626,7 @@ Transform:
   m_GameObject: {fileID: 1474379154}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.956616, y: -5.5166473, z: 3.4921303}
+  m_LocalPosition: {x: 4.9, y: 0.5, z: 3.4921303}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
