@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Magara
   m_EditorClassIdentifier: 
   themeName: Magara
-  tunnelMaterial: {fileID: 2100000, guid: 43bf6b853bcff3f4fa2e2b0170e847c1, type: 2}
+  tunnelMaterial: {fileID: 2100000, guid: 9d4e4a0d194a4b343b19c8e7537aae7f, type: 2}
   obstacleMaterial: {fileID: 2100000, guid: f9847f559bce8404195c475462068fbb, type: 2}

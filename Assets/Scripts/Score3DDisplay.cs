@@ -3,8 +3,11 @@ using TMPro;
 
 public class Score3DDisplay : MonoBehaviour
 {
-    [Tooltip("3D Text objesi (TextMeshPro kullanarak)")]
-    public TextMeshPro scoreText;
+    [Tooltip("3D veya UI Text objesi (TextMeshPro kullanarak)")]
+    public TMP_Text scoreText;
+    
+    [Tooltip("Rekor skoru göstermek için (İsteğe bağlı)")]
+    public TMP_Text bestScoreText;
     
     [Tooltip("Oyuncuyu takip etmesi için referans")]
     public Transform playerTransform;
@@ -35,14 +38,23 @@ public class Score3DDisplay : MonoBehaviour
             Color c = scoreText.color;
             c.a = 0.5f + Mathf.Sin(Time.time * pulseSpeed) * 0.3f;
             scoreText.color = c;
+            
+            if (bestScoreText != null)
+            {
+                bestScoreText.color = c;
+            }
         }
     }
 
-    public void UpdateScore(float score)
+    public void UpdateScore(float score, float bestScore)
     {
         if (scoreText != null)
         {
             scoreText.text = "SCORE: " + Mathf.FloorToInt(score).ToString();
+        }
+        if (bestScoreText != null)
+        {
+            bestScoreText.text = "BEST: " + Mathf.FloorToInt(bestScore).ToString();
         }
     }
 }

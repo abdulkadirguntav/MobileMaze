@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     [Header("References")]
     [Tooltip("Hızı güncellenecek karakter kontrolcüsü")]
-    public CharacterController playerController;
+    public PlayerController playerController;
     [Tooltip("Z mesafesini hesaplamak için oyuncu referansı")]
     public Transform playerTransform;
     [Tooltip("Dinamik ışıklandırma referansı")]
@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Game State")]
     public float score;
+    public float bestScore;
     public int currentPhase = 1;
     
     [Header("Hardcore Difficulty Settings")]
@@ -53,6 +54,8 @@ public class GameManager : MonoBehaviour
             startZ = playerTransform.position.z;
         }
 
+        bestScore = PlayerPrefs.GetFloat("BestScore", 0f);
+
         // BGM (Arka Plan Müziği) başlat (Eğer atandıysa)
         if (bgmAudioSource != null && bgmAudioSource.clip != null)
         {
@@ -70,6 +73,11 @@ public class GameManager : MonoBehaviour
 
         // Skoru, ilerlenen Z mesafesi olarak (tamsayı) hesapla
         score = Mathf.Floor(playerTransform.position.z - startZ);
+        if (score > bestScore)
+        {
+            bestScore = score;
+        }
+
         CheckPhases();
         
         // Dinamik ışıklandırmayı skora göre güncelle
@@ -80,6 +88,12 @@ public class GameManager : MonoBehaviour
 
         // Hızı her frame güncelle (Daralan tünel ve hardcore hızlanma)
         UpdatePhaseAndSpeed();
+        
+        // 3D Skoru Güncelle
+        if (score3DDisplay != null)
+        {
+            score3DDisplay.UpdateScore(score, bestScore);
+        }
     }
 
     private void CheckPhases()
@@ -103,13 +117,36 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
 
         isGameOver = true;
+        
+        PlayerPrefs.SetFloat("BestScore", bestScore);
+        PlayerPrefs.Save();
+        
+        StartCoroutine(HitStopRoutine());
+    }
 
+    private System.Collections.IEnumerator HitStopRoutine()
+    {
         // BGM durdur ve Çarpışma sesini çal
         if (bgmAudioSource != null) bgmAudioSource.Stop();
         if (crashSfxClip != null)
         {
             AudioSource.PlayClipAtPoint(crashSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
         }
+
+        // --- JUICE: Hit-Stop ---
+        Time.timeScale = 0.05f;
+
+        // Camera Shake tetikle
+        if (Camera.main != null)
+        {
+            CameraController cam = Camera.main.GetComponent<CameraController>();
+            if (cam != null) cam.TriggerHitStopShake();
+        }
+
+        // 1 saniye gerçek zamanda bekle (timeScale 0.05 olduğu için)
+        yield return new WaitForSecondsRealtime(1f);
+
+        Time.timeScale = 0f;
         
         // Karakteri durdur
         if (playerController != null)
@@ -129,6 +166,7 @@ public class GameManager : MonoBehaviour
     // Butona basıldığında çağrılacak
     public void RestartGame()
     {
+        Time.timeScale = 1f; // Hit-stop sonrası restart yapılırken zamanı düzelt
         // Mevcut sahneyi en baştan yükle
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

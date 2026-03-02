@@ -1,6 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class PatternProbability
+{
+    public ObstaclePattern pattern;
+    [Range(0f, 1f)]
+    public float weight = 1f;
+}
+
+public enum ObstaclePattern
+{
+    RandomBlocks,
+    CornerChaser,
+    FakeOut,
+    ShadowHunter,
+    SpiralNinja,
+    Crusher
+}
+
 public class ObstacleSpawner : MonoBehaviour
 {
     [Header("References")]
@@ -20,21 +38,32 @@ public class ObstacleSpawner : MonoBehaviour
 
     [Header("Spawn Settings")]
     public float spawnAheadDistance = 200f; // Pop-in hissini yok etmek için 200'e çıkarıldı
+    public int wavesBeforeBreather = 3;
     
+    [Header("Pattern Weights")]
+    public List<PatternProbability> patternWeights = new List<PatternProbability>
+    {
+        new PatternProbability { pattern = ObstaclePattern.RandomBlocks, weight = 1f },
+        new PatternProbability { pattern = ObstaclePattern.CornerChaser, weight = 0.5f },
+        new PatternProbability { pattern = ObstaclePattern.FakeOut, weight = 0.5f },
+        new PatternProbability { pattern = ObstaclePattern.ShadowHunter, weight = 0.5f },
+        new PatternProbability { pattern = ObstaclePattern.SpiralNinja, weight = 0.5f },
+        new PatternProbability { pattern = ObstaclePattern.Crusher, weight = 0.5f }
+    };
+
     private float nextSpawnZ;
-    private int deathZigZagRemaining = 0;
+    private int wavesSpawnedCount = 0;
+    private int breatherRemaining = 0;
     private int lastSafeSlot = 2; // Başlangıçta orta sol güvenli varsayalım
 
-    // 2x3 Grid Merkez Noktaları (0, 1 = Üst | 2, 3 = Orta | 4, 5 = Alt)
+    // 2x2 Grid Merkez Noktaları (0 = Sol Üst | 1 = Sağ Üst | 2 = Sol Alt | 3 = Sağ Alt)
     // 2 birimlik aralıklarla ölçeklendirilmiş hali
     private readonly Vector2[] gridSlots = new Vector2[]
     {
-        new Vector2(-1f, 2f),   // 0: Sol Üst
-        new Vector2(1f, 2f),    // 1: Sağ Üst
-        new Vector2(-1f, 0f),   // 2: Sol Orta
-        new Vector2(1f, 0f),    // 3: Sağ Orta
-        new Vector2(-1f, -2f),  // 4: Sol Alt
-        new Vector2(1f, -2f)    // 5: Sağ Alt
+        new Vector2(-1f, 1f),   // 0: Sol Üst
+        new Vector2(1f, 1f),    // 1: Sağ Üst
+        new Vector2(-1f, -1f),  // 2: Sol Alt
+        new Vector2(1f, -1f)    // 3: Sağ Alt
     };
 
     void Start()
@@ -91,41 +120,66 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void SpawnObstaclePattern(float zPosition)
     {
-        int phase = gameManager.currentPhase;
+        // 1. Nefes Alma (Breather) Boşluğu Kontrolü
+        if (breatherRemaining > 0)
+        {
+            breatherRemaining--;
+            return; // Sadece boşluk bırak, engel spawn etme (Power-Up şansı Update içinde atılıyor)
+        }
 
-        // Rastgele bir pattern seç
-        float rand = Random.value;
+        wavesSpawnedCount++;
+        if (wavesSpawnedCount >= wavesBeforeBreather)
+        {
+            wavesSpawnedCount = 0;
+            breatherRemaining = Random.Range(1, 3); // 1 veya 2 boş dalga
+        }
+
+        // 2. Rastgele bir patern seç
+        ObstaclePattern selectedPattern = GetRandomPattern();
         
-        // Devam eden bir sekans varsa onu oynat (Death ZigZag)
-        if (deathZigZagRemaining > 0)
+        switch (selectedPattern)
         {
-            SpawnDeathZigZag(zPosition);
-            return;
+            case ObstaclePattern.RandomBlocks:
+                SpawnRandomBlocks(zPosition);
+                break;
+            case ObstaclePattern.CornerChaser:
+                SpawnCornerChaser(zPosition);
+                break;
+            case ObstaclePattern.FakeOut:
+                SpawnFakeOut(zPosition);
+                break;
+            case ObstaclePattern.ShadowHunter:
+                SpawnShadowHunter(zPosition);
+                break;
+            case ObstaclePattern.SpiralNinja:
+                SpawnSpiralNinja(zPosition);
+                break;
+            case ObstaclePattern.Crusher:
+                SpawnCrusher(zPosition);
+                break;
         }
+    }
 
-        if (phase >= 3)
+    private ObstaclePattern GetRandomPattern()
+    {
+        float totalWeight = 0f;
+        foreach (var pw in patternWeights) totalWeight += pw.weight;
+        
+        float randomVal = Random.Range(0, totalWeight);
+        float currentSum = 0f;
+        
+        foreach (var pw in patternWeights)
         {
-            // Yeni Animated Snake ve Checkerboard patternlerini yüksek oranda çağır
-            if (rand < 0.15f) { InitiateAnimatedSnake(zPosition); return; }
-            if (rand < 0.30f) { InitiateAnimatedCheckerboard(zPosition); return; }
-            if (rand < 0.40f) { SpawnSuddenBlockade(zPosition); return; }
-            if (rand < 0.50f) { SpawnSuddenOpening(zPosition); return; }
-            if (rand < 0.60f) { SpawnClosingGate(zPosition); return; }
-            if (rand < 0.70f) { SpawnDiagonalSpinner(zPosition); return; }
-            if (rand < 0.80f) { SpawnGuillotine(zPosition); return; }
-            if (rand < 0.90f) { InitiateDeathZigZag(zPosition); return; }
+            currentSum += pw.weight;
+            if (randomVal <= currentSum)
+                return pw.pattern;
         }
-        else if (phase >= 2)
-        {
-            if (rand < 0.15f) { InitiateAnimatedSnake(zPosition); return; }
-            if (rand < 0.30f) { InitiateAnimatedCheckerboard(zPosition); return; }
-            if (rand < 0.40f) { SpawnClosingGate(zPosition); return; }
-            if (rand < 0.50f) { SpawnDiagonalSpinner(zPosition); return; }
-        }
+        return ObstaclePattern.RandomBlocks;
+    }
 
-        // --- Normal Standart Spawn (1 ile 4 arası küp) ---
-        int obstacleCount = Random.Range(1, 4); 
-        if (phase >= 3) obstacleCount = Random.Range(2, 5); 
+    private void SpawnRandomBlocks(float zPosition)
+    {
+        int obstacleCount = Random.Range(1, 3); // 2x2 gridde 1 veya 2 engel (daha adil)
 
         // 1. Garantili Güvenli slot seç (bir öncekine komşu)
         int newSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
@@ -133,137 +187,78 @@ public class ObstacleSpawner : MonoBehaviour
 
         // 2. Kalan slotları (safe slot hariç) bul
         List<int> availableSlots = new List<int>();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             if (i != newSafeSlot) availableSlots.Add(i);
         }
         ShuffleList(availableSlots);
 
-        List<GameObject> spawned = new List<GameObject>();
         for (int i = 0; i < obstacleCount; i++)
         {
-            SpawnSingleObstacle(availableSlots[i], zPosition, ObstacleBehavior.Standard, out GameObject ob);
-            if (ob != null) spawned.Add(ob);
-        }
-
-        // Fake-out (Şaşırtmaca) ihtimali
-        if (phase >= 3 && Random.value < 0.3f && spawned.Count > 0)
-        {
-            Obstacle obs = spawned[Random.Range(0, spawned.Count)].GetComponent<Obstacle>();
-            
-            // Kullanılmayan boş bir slota (bu güvenli slot DA OLABİLİR veya kalan başka bir boşluk) fake-out at
-            int emptySlot = availableSlots[obstacleCount]; 
-            Vector2 targetPos2D = gridSlots[emptySlot];
-            Vector3 fakeOutTarget = new Vector3(transform.position.x + targetPos2D.x, transform.position.y + targetPos2D.y, zPosition);
-            
-            obs.currentBehavior = ObstacleBehavior.FakeOut;
-            obs.SetFakeOutTarget(fakeOutTarget);
+            SpawnSingleObstacle(availableSlots[i], zPosition, ObstacleBehavior.Standard, out _);
         }
     }
 
-    // -- Yeni Animated Checkerboard ve Snake Patternleri --
-
-    private void InitiateAnimatedCheckerboard(float zPosition)
+    private void SpawnCornerChaser(float zPosition)
     {
-        // 0-3-4 (Sol Üst, Sağ Orta, Sol Alt) doğur, sağ-sola hareketlenip 1-2-5 yerlerine geçerler.
-         bool startRight = Random.value > 0.5f;
-         List<int> slots = startRight ? new List<int> { 1, 2, 5 } : new List<int> { 0, 3, 4 };
+        // 1 tam tur atacak şekilde (offset kullanarak) 1 blok
+        int startOffset = Random.Range(0, 4);
+        SpawnSingleObstacle(0, zPosition, ObstacleBehavior.CornerChaser, out GameObject obsObj);
+        Obstacle obs = obsObj.GetComponent<Obstacle>();
+        if (obs != null) obs.SetAnimOffset(startOffset);
         
-        foreach (int slot in slots)
-        {
-            SpawnSingleObstacle(slot, zPosition, ObstacleBehavior.AnimatedCheckerboard, out _);
-        }
+        lastSafeSlot = GetSafeAdjacentSlot(lastSafeSlot); 
     }
 
-    private void InitiateAnimatedSnake(float zPosition)
+    private void SpawnFakeOut(float zPosition)
     {
-        int blocks = Random.Range(4, 6); // 4 or 5 blocks (leaving 1 or 2 holes)
-        int startOffset = Random.Range(0, 6);
-        for (int i = 0; i < blocks; i++)
-        {
-            float offset = (startOffset + i);
-            SpawnSingleObstacle(0, zPosition, ObstacleBehavior.AnimatedSnake, out GameObject obsObj);
-            Obstacle obs = obsObj.GetComponent<Obstacle>();
-            if (obs != null) obs.SetAnimOffset(offset);
-        }
-    }
-
-    // -- Özel Pattern Dağıtımları --
-
-    private void SpawnDeathZigZag(float zPosition)
-    {
-        int forcedSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
-        lastSafeSlot = forcedSafeSlot;
-        deathZigZagRemaining--;
-
-        for (int i = 0; i < 6; i++)
-        {
-            if (i != forcedSafeSlot)
-                SpawnSingleObstacle(i, zPosition, ObstacleBehavior.Standard, out _);
-        }
-    }
-
-    private void InitiateDeathZigZag(float zPosition)
-    {
-        deathZigZagRemaining = Random.Range(3, 5);
-        SpawnDeathZigZag(zPosition);
-    }
-
-    private void SpawnSuddenBlockade(float zPosition)
-    {
-        // Garantili geçiş için safe slot belirle
+        // 4 bloğun hepsi var, 1'i (safe slot yaparsak adil olur) oyuncu yaklaşınca kaybolacak
         int forcedSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
         lastSafeSlot = forcedSafeSlot;
 
-        int count = Random.Range(4, 6);
-        List<int> availableSlots = new List<int>();
-        for (int i = 0; i < 6; i++) {
-            if (i != forcedSafeSlot) availableSlots.Add(i);
-        }
-        ShuffleList(availableSlots);
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < 4; i++)
         {
-            SpawnSingleObstacle(availableSlots[i], zPosition, ObstacleBehavior.SuddenBlockade, out _);
-        }
-    }
-
-    private void SpawnSuddenOpening(float zPosition)
-    {
-        // 6 bloğun hepsi var, 1'i oyuncu yaklaşınca kaybolacak
-        int openingSlot = Random.Range(0, 6);
-        for (int i = 0; i < 6; i++)
-        {
-            ObstacleBehavior behav = (i == openingSlot) ? ObstacleBehavior.SuddenOpening_Disappear : ObstacleBehavior.SuddenOpening_Wall;
+            ObstacleBehavior behav = (i == forcedSafeSlot) ? ObstacleBehavior.SuddenOpening_Disappear : ObstacleBehavior.SuddenOpening_Wall;
             SpawnSingleObstacle(i, zPosition, behav, out _);
         }
     }
 
-    private void SpawnClosingGate(float zPosition)
+    private void SpawnShadowHunter(float zPosition)
     {
-        // Aynı yatay sırada sağlı sollu 2 Piston
-        // Random satır seç (Üst: 0-1, Orta: 2-3, Alt: 4-5)
-        int row = Random.Range(0, 3);
+        SpawnSingleObstacle(0, zPosition, ObstacleBehavior.ShadowHunter, out _);
+        lastSafeSlot = GetSafeAdjacentSlot(lastSafeSlot);
+    }
+
+    private void SpawnSpiralNinja(float zPosition)
+    {
+        // Spiral sırası (saat yönünde vb)
+        int[] spiralPath = { 0, 1, 3, 2 }; // Sol Üst, Sağ Üst, Sağ Alt, Sol Alt
+        
+        // Z mesafesinde çok küçük farklarla 4 tane doğur (Ardışık)
+        float spiralZOffset = 15f; 
+        for (int i = 0; i < 4; i++)
+        {
+            SpawnSingleObstacle(spiralPath[i], zPosition + (i * spiralZOffset), ObstacleBehavior.Standard, out _);
+        }
+        
+        lastSafeSlot = 0; // Spiralin sonu 2 (Sol Alt), komşusu 0 (Sol Üst) diyebiliriz.
+        
+        // Bu pattern Z ekseninde yer kapladığı için bir sonraki spawn mesafesini uzatalım
+        nextSpawnZ += spiralZOffset * 3;
+    }
+
+    private void SpawnCrusher(float zPosition)
+    {
+        // Üst satır veya Alt satırda sağlı sollu 2 Piston
+        int row = Random.Range(0, 2);
         int leftSlot = row * 2;
         int rightSlot = row * 2 + 1;
 
         SpawnSingleObstacle(leftSlot, zPosition, ObstacleBehavior.PistonLeft, out _);
         SpawnSingleObstacle(rightSlot, zPosition, ObstacleBehavior.PistonRight, out _);
-    }
 
-    private void SpawnGuillotine(float zPosition)
-    {
-        // Sadece üst satırda (0 veya 1 numaralı slotlar) spawn olmalı ve alt slotlara doğru düşmeli
-        int col = Random.Range(0, 2); // 0 (Sol) veya 1 (Sağ)
-        // Alt satıra kadar düşecek, biz hedef olarak alt veya orta satırı verebiliriz (böylece orayı kapatır)
-        int targetSlot = (Random.value > 0.5f) ? col + 2 : col + 4; // Orta veya Alt slot
-        
-        SpawnSingleObstacle(targetSlot, zPosition, ObstacleBehavior.Guillotine, out _);
-    }
-
-    private void SpawnDiagonalSpinner(float zPosition)
-    {
-        int slot = Random.Range(0, 6);
-        SpawnSingleObstacle(slot, zPosition, ObstacleBehavior.DiagonalSpinner, out _);
+        // Kapanan satır dışında kalan satır güvenli
+        int safeRow = (row == 0) ? 1 : 0;
+        lastSafeSlot = safeRow * 2; // O satırın solu güvenli kabul edilebilir
     }
 
     // Ortak Yardımcı Metodlar
@@ -354,7 +349,7 @@ public class ObstacleSpawner : MonoBehaviour
             powerUpPool.Add(puObj);
         }
 
-        int rndSlot = Random.Range(0, 6);
+        int rndSlot = Random.Range(0, 4);
         Vector2 pos = gridSlots[rndSlot];
         puObj.transform.position = new Vector3(transform.position.x + pos.x, transform.position.y + pos.y, zPosition);
         puObj.SetActive(true);

@@ -13,7 +13,9 @@ public enum ObstacleBehavior
     SuddenOpening_Wall,
     SuddenOpening_Disappear,
     AnimatedCheckerboard,
-    AnimatedSnake
+    AnimatedSnake,
+    CornerChaser,
+    ShadowHunter
 }
 
 public class Obstacle : MonoBehaviour
@@ -33,8 +35,8 @@ public class Obstacle : MonoBehaviour
     public float animSpeed = 5f;
 
     private static readonly Vector2[] snakePath = new Vector2[] {
-        new Vector2(-1, 2), new Vector2(1, 2), new Vector2(1, 0),
-        new Vector2(1, -2), new Vector2(-1, -2), new Vector2(-1, 0)
+        new Vector2(-1, 1), new Vector2(1, 1),
+        new Vector2(1, -1), new Vector2(-1, -1)
     };
 
     private float triggerDistance;
@@ -112,8 +114,12 @@ public class Obstacle : MonoBehaviour
                 animSpeed = 15f; 
                 break;
             case ObstacleBehavior.AnimatedSnake:
+            case ObstacleBehavior.CornerChaser:
                 initialWorldPosition = targetWorldPosition;
                 animSpeed = 15f; 
+                break;
+            case ObstacleBehavior.ShadowHunter:
+                initialWorldPosition = targetWorldPosition;
                 break;
         }
     }
@@ -141,15 +147,26 @@ public class Obstacle : MonoBehaviour
             float newX = Mathf.Cos(Time.time * animSpeed + animOffset) * 1f;
             transform.position = new Vector3(newX, initialWorldPosition.y, transform.position.z);
         }
-        else if (currentBehavior == ObstacleBehavior.AnimatedSnake)
+        else if (currentBehavior == ObstacleBehavior.AnimatedSnake || currentBehavior == ObstacleBehavior.CornerChaser)
         {
-            float currentT = (Time.time * animSpeed + animOffset) % 6f;
-            if (currentT < 0) currentT += 6f;
+            float currentT = (Time.time * animSpeed + animOffset) % 4f;
+            if (currentT < 0) currentT += 4f;
             int index1 = Mathf.FloorToInt(currentT);
-            int index2 = (index1 + 1) % 6;
+            int index2 = (index1 + 1) % 4;
             float lerpT = currentT - index1;
             Vector2 pos2D = Vector2.Lerp(snakePath[index1], snakePath[index2], lerpT);
             transform.position = new Vector3(pos2D.x, pos2D.y, transform.position.z);
+        }
+        else if (currentBehavior == ObstacleBehavior.ShadowHunter)
+        {
+            if (distance > 15f)
+            {
+                // X ve Y ekseninde oyuncuyu takip et
+                Vector3 newPos = transform.position;
+                newPos.x = Mathf.Lerp(newPos.x, playerTransform.position.x, Time.deltaTime * 20f);
+                newPos.y = Mathf.Lerp(newPos.y, playerTransform.position.y, Time.deltaTime * 20f);
+                transform.position = newPos;
+            }
         }
 
         if (!hasTriggered && distance > 0)
