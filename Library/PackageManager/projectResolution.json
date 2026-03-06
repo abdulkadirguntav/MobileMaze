@@ -9,6 +9,16 @@
     "C:\\Program Files\\Unity\\Hub\\Editor\\6000.0.67f1\\Editor\\Data\\Resources\\PackageManager\\BuiltInPackages\\BuiltInPackagesCombined.sha1"
   ],
   "outputs": {
+    "com.unity.2d.sprite@1.0.0": {
+      "name": "com.unity.2d.sprite",
+      "displayName": "2D Sprite",
+      "resolvedPath": "D:\\Unity\\Projects\\MobileMaze\\Library\\PackageCache\\com.unity.2d.sprite@6be4bb429b13",
+      "fingerprint": "6be4bb429b13231b7e2e81f7a2a8188e1e76add2",
+      "editorCompatibility": "2019.2.0a1",
+      "version": "1.0.0",
+      "source": "builtin",
+      "testable": false
+    },
     "com.unity.feature.mobile@1.0.0": {
       "name": "com.unity.feature.mobile",
       "displayName": "Mobile",
