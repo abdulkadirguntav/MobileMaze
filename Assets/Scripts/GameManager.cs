@@ -15,34 +15,18 @@ public class GameManager : MonoBehaviour
     [Header("Audio System")]
     public AudioSource bgmAudioSource;
     public AudioClip crashSfxClip;
-    public AudioClip overclockSfxClip;
-    public AudioClip glassBreakSfxClip;
+    public AudioClip shieldBreakSfxClip; // Yeni: Kalkan kırılma sesi
 
-    [Header("Game State & Score")]
-    public float score;
-    public float bestScore;
-    private float startZ;
+    [Header("Game State")]
     public bool isGameOver { get; private set; } = false;
+    private float startTime;
 
-    [Header("Hardcore Difficulty Settings")]
-    public AnimationCurve playerSpeedCurve = AnimationCurve.Linear(0, 120f, 3000, 360f);
-    public AnimationCurve spawnIntervalCurve = AnimationCurve.Linear(0, 10f, 3000, 3f);
-    public AnimationCurve fakeOutLerpSpeedCurve = AnimationCurve.Linear(0, 30f, 3000, 80f);
-    public float fakeOutTimeAllowance = 0.15f; 
+    [Header("Difficulty Curves")]
+    public AnimationCurve playerSpeedCurve = AnimationCurve.Linear(0, 120f, 600, 360f); // Zaman bazlı hız
     public float CurrentPlayerSpeed { get; private set; }
-
-    [Header("Overclock System")]
-    [Tooltip("Overclock moduna girmek için hatasız geçilmesi gereken engel sayısı")]
-    public int obstaclesToOverclock = 10;
-    
-    private int consecutiveObstaclesPassed = 0;
-    public bool isOverclocked { get; private set; } = false;
 
     [Header("UI")]
     public GameObject gameOverPanel;
-    
-    [Header("Economy")]
-    public int dataCoresCollected = 0;
 
     void Awake()
     {
@@ -58,12 +42,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (playerTransform != null)
-        {
-            startZ = playerTransform.position.z;
-        }
-
-        bestScore = PlayerPrefs.GetFloat("BestScore", 0f);
+        startTime = Time.time;
 
         if (bgmAudioSource != null && bgmAudioSource.clip != null)
         {
@@ -77,13 +56,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (playerTransform == null || isGameOver) return;
-
-        score = Mathf.Floor(playerTransform.position.z - startZ);
-        if (score > bestScore)
-        {
-            bestScore = score;
-        }
-
         UpdateSpeed();
     }
 
@@ -91,84 +63,44 @@ public class GameManager : MonoBehaviour
     {
         if (playerController != null && !playerController.isDead)
         {
-            CurrentPlayerSpeed = playerSpeedCurve.Evaluate(score);
+            float timeAlive = Time.time - startTime;
+            CurrentPlayerSpeed = playerSpeedCurve.Evaluate(timeAlive);
             playerController.SetForwardSpeed(CurrentPlayerSpeed);
         }
     }
 
-    // Engel geçildiğinde çağrılır (Obstacle.cs içinden)
-    public void RegisterObstaclePassed()
+    // Herhangi bir ölümcül engele çarpıldığında çağrılacak yeni fonksiyon
+    public void HandleCollision()
     {
         if (isGameOver) return;
 
-        consecutiveObstaclesPassed++;
-
-        if (consecutiveObstaclesPassed >= obstaclesToOverclock && !isOverclocked)
+        if (playerController != null)
         {
-            ActivateOverclock();
+            // Eğer Dash açıksa ölümsüzdür, hiçbir şey olmaz
+            if (playerController.isInvincible)
+            {
+                return; 
+            }
+
+            // Eğer Health PowerUp kalkanı aktifse kalkan kırılır ama oyun devam eder
+            if (playerController.healthShieldCount > 0)
+            {
+                playerController.ConsumeHealthShield();
+                
+                if (shieldBreakSfxClip != null)
+                    AudioSource.PlayClipAtPoint(shieldBreakSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
+                
+                return;
+            }
         }
+
+        // Kalkan ve Dash yoksa oyun biter
+        GameOver();
     }
 
-    private void ActivateOverclock()
+    private void GameOver()
     {
-        isOverclocked = true;
-        if (playerController != null) playerController.SetOverclockState(true);
-
-        if (overclockSfxClip != null)
-            AudioSource.PlayClipAtPoint(overclockSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
-
-        Debug.Log("OVERCLOCK ACTIVATED!");
-    }
-
-    public void DeactivateOverclock()
-    {
-        isOverclocked = false;
-        consecutiveObstaclesPassed = 0; // Sayacı sıfırla
-        if (playerController != null) playerController.SetOverclockState(false);
-        Debug.Log("OVERCLOCK DEACTIVATED!");
-    }
-
-    public void HandleGlassCollision()
-    {
-        if (isOverclocked)
-        {
-            // Camı kır (Overclock biter)
-            if (glassBreakSfxClip != null)
-                AudioSource.PlayClipAtPoint(glassBreakSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
-            
-            DeactivateOverclock();
-        }
-        else if (playerController != null && playerController.isInvincible)
-        {
-            // Dash (Kinetik Kalkan) aktifse sadece kır, game over olmaz. Overclock sayacı sıfırlanmaz.
-            if (glassBreakSfxClip != null)
-                AudioSource.PlayClipAtPoint(glassBreakSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
-        }
-        else
-        {
-            // Normal çarpışma
-            GameOver();
-        }
-    }
-
-    public void CollectDataCore()
-    {
-        dataCoresCollected++;
-        PlayerPrefs.SetInt("TotalDataCores", PlayerPrefs.GetInt("TotalDataCores", 0) + 1);
-        PlayerPrefs.Save();
-    }
-
-    public void GameOver()
-    {
-        if (isGameOver) return;
-        
-        // Kinetik kalkan varsa (Dash) ölümsüzdür
-        if (playerController != null && playerController.isInvincible) return;
-
         isGameOver = true;
-        
-        PlayerPrefs.SetFloat("BestScore", bestScore);
-        PlayerPrefs.Save();
         
         StartCoroutine(HitStopRoutine());
     }
@@ -189,20 +121,9 @@ public class GameManager : MonoBehaviour
             if (cam != null) cam.TriggerHitStopShake();
         }
 
-        yield return new WaitForSecondsRealtime(1f);
-
-        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(2f); // 2 Saniye bekle (Kamera devrilirken izlemek için)
         
-        if (playerController != null)
-        {
-            playerController.Die();
-            playerController.enabled = false; 
-        }
-
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-        }
+        RestartGame(); // Otomatik Restart
     }
 
     public void RestartGame()

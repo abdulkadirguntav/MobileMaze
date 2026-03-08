@@ -5,71 +5,77 @@ using System.Collections;
 [RequireComponent(typeof(UnityEngine.CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("İleri Hareket (Forward Movement)")]
-    [SerializeField] private float baseForwardSpeed = 15f;
-    private float currentForwardSpeed;
-
-    [Header("Şerit Ayarları (Lanes)")]
-    [SerializeField] private float laneDistance = 3f; // Şeritler arası mesafe
-    [SerializeField] private float sideLerpSpeed = 10f; // Sağa sola geçiş pürüzsüzlüğü
+    [Header("Matris & Şerit Ayarları (3x3 Grid)")]
+    [Tooltip("Sol (-X), Orta (0), Sağ (+X) şeritler arası mesafe")]
+    [SerializeField] private float laneDistance = 3f;
+    [Tooltip("Şeritler arası yana geçiş hızı")]
+    [SerializeField] private float sideLerpSpeed = 15f;
     private int currentLane = 1; // 0 = Sol, 1 = Orta, 2 = Sağ
-    
-    [Header("Zıplama & Yerçekimi (Jump & Gravity)")]
-    [SerializeField] private float jumpForce = 8f;
-    [SerializeField] private float gravity = -20f;
-    
-    [Header("Kayma Ayarları (Slide)")]
-    [SerializeField] private float slideDuration = 1f;
-    [SerializeField] private float slideHeightMultiplier = 0.5f; // Capsule collider'ın ne kadar küçüleceği
-    
-    [Header("Duvarda Koşma (Wall-Run)")]
-    [SerializeField] private float wallRunDuration = 1.5f;
-    [SerializeField] private float wallRunGravityMultiplier = 0.2f; // Wall-run sırasında yavaşça aşağı kayma
 
-    [Header("Overclock & Vaulting")]
-    [SerializeField] private float overclockSpeedMultiplier = 1.4f;
-    [SerializeField] private float vaultJumpForceMultiplier = 1.2f;
-    [SerializeField] private float vaultGravityMultiplier = 1.5f; // Daha hızlı yukarı ve aşağı kavisli atlayış
-
-    [Header("Power-Ups")]
-    [SerializeField] private float dashSpeedMultiplier = 2f;
+    [Header("Katman (Layer) & Fizik Ayarları")]
+    [Tooltip("Normal koşu hızı (Z ekseninde)")]
+    [SerializeField] private float forwardSpeed = 20f;
+    [Tooltip("Zıplama gücü")]
+    [SerializeField] private float jumpForce = 12f;
+    [Tooltip("Yerçekimi gücü")]
+    [SerializeField] private float gravity = -25f;
     
-    // Bileşenler (Components)
+    [Header("Kayma (Slide) Ayarları")]
+    [Tooltip("Kayma modunda kalma süresi")]
+    [SerializeField] private float slideDuration = 0.8f;
+    [Tooltip("Normal Karakter Boyu")]
+    [SerializeField] private float normalHeight = 2f;
+    [Tooltip("Kayma Karakter Boyu")]
+    [SerializeField] private float slideHeight = 1f;
+
+    [Header("Wall Run Ayarları")]
+    [Tooltip("Duvarda kalma süresi")]
+    [SerializeField] private float wallRunDuration = 1.2f;
+    [Tooltip("Duvar koşusunda yerçekimi çarpanı (Örn: 0 ise düşmez, 0.2 ise yavaş düşer)")]
+    [SerializeField] private float wallRunGravityMultiplier = 0f;
+
+    // Bileşenler ve Sabit Değerler
     private UnityEngine.CharacterController controller;
-    
-    // Durumlar (States)
     private float verticalVelocity;
-    private float originalHeight;
-    private float originalCenterY;
-    
+
+    // Durum Kontrolleri (State Machine)
     public bool isSliding { get; private set; } = false;
-    private float slideTimer;
-
+    public bool isJumping { get; private set; } = false;
     public bool isWallRunning { get; private set; } = false;
-    private float wallRunTimer;
-    private int wallRunDirection = 0; // -1: Sol, 1: Sağ
-
-    public bool isOverclocked { get; private set; } = false;
-    public bool isInvincible { get; private set; } = false; // Dash gücü için
     public bool isDead { get; private set; } = false;
+    
+    // Güçlendirme Envanteri & Durumları
+    public bool isInvincible { get; private set; } = false;
+    
+    [Header("Güçlendirme Envanteri (Debug)")]
+    public int healthShieldCount { get; private set; } = 0;
 
-    // Kamera ve Juice için Olaylar (Events)
+    [Header("Güçlendirme Ayarları")]
+    [SerializeField] private float dashDuration = 5f;
+    [SerializeField] private float dashSpeed = 50f;
+    [SerializeField] private float slowMotionDuration = 4f;
+    [SerializeField] private float timeScaleTarget = 0.4f;
+    [Tooltip("Bomba patladığında önündeki kaç birimlik engeli silecek?")]
+    [SerializeField] private float bombClearDistance = 100f;
+    [SerializeField] private GameObject bombEffectPrefab;
+
+    // Etkinlikler (FPS Kamera için)
     public event Action OnJump;
     public event Action OnLand;
     public event Action OnSlideStart;
     public event Action OnSlideEnd;
-    public event Action<int> OnWallRunStart;
+    public event Action<int> OnWallRunStart; // -1: Sol Duvar, 1: Sağ Duvar
     public event Action OnWallRunEnd;
+    public event Action OnDeath; // Kamera yere yığılma efekti için
 
     private bool wasGrounded;
+    private Coroutine wallRunCoroutine;
+    private Coroutine slideCoroutine;
 
     void Start()
     {
         controller = GetComponent<UnityEngine.CharacterController>();
-        
-        originalHeight = controller.height;
-        originalCenterY = controller.center.y;
-        currentForwardSpeed = baseForwardSpeed;
+        SetHeight(normalHeight);
     }
 
     void Update()
@@ -77,260 +83,304 @@ public class PlayerController : MonoBehaviour
         if (isDead) return;
 
         HandleInput();
-        HandleWallRunAndGravity();
-        HandleSlide();
-        CheckLanding();
+        CalculateVerticalMovement();
 
-        // Şerit Hedef Pozisyonunu Hesapla
-        int targetLaneIndex = currentLane - 1; 
+        // 3 Şeritli X Pozisyonunu Hesaplama
+        int targetLaneIndex = currentLane - 1; // 0 -> -1(Sol), 1 -> 0(Orta), 2 -> 1(Sağ)
         float targetX = targetLaneIndex * laneDistance;
 
-        // X ekseninde pürüzsüz Lerp geçişi
         float currentX = Mathf.Lerp(transform.position.x, targetX, sideLerpSpeed * Time.deltaTime);
-        
-        // Hız Çarpanlarını Hesapla
-        float moveSpeed = currentForwardSpeed;
-        if (isInvincible) moveSpeed *= dashSpeedMultiplier; // Dash aktifse ekstra hız
-        else if (isOverclocked) moveSpeed *= overclockSpeedMultiplier;
 
-        // Hareket vektörü: X ekseninde değişim, Y ekseninde yerçekimi, Z ekseninde sürekli ileri
-        Vector3 displacement = new Vector3(currentX - transform.position.x, verticalVelocity * Time.deltaTime, moveSpeed * Time.deltaTime);
+        // Hareket Vektörü
+        Vector3 displacement = new Vector3(
+            currentX - transform.position.x, 
+            verticalVelocity * Time.deltaTime, 
+            forwardSpeed * Time.deltaTime
+        );
 
         controller.Move(displacement);
+        CheckLanding();
     }
 
     private void CheckLanding()
     {
-        if (controller.isGrounded && !wasGrounded)
+        if (controller.isGrounded && !wasGrounded && !isWallRunning)
         {
             OnLand?.Invoke();
+            isJumping = false;
         }
         wasGrounded = controller.isGrounded;
     }
 
     private void HandleInput()
     {
-        bool swipeLeft = Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
-        bool swipeRight = Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
-        bool swipeUp = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
-        bool swipeDown = Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow);
-
-        // Sola Geçiş veya Sol Duvarda Koşma
-        if (swipeLeft)
+        // Şerit Değiştirme (X Ekseninde Sol/Sağ) veya Wall Run Başlatma
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if (currentLane > 0) 
+            if (currentLane > 0)
             {
                 currentLane--;
-                if (isWallRunning) StopWallRun(); // Şerit değiştirince duvarı bırak
+                StopWallRun(); // Şerit değiştiriyorsa wall run biter
             }
-            else if (currentLane == 0 && !isWallRunning && !controller.isGrounded)
+            else if (currentLane == 0 && !controller.isGrounded && !isWallRunning)
             {
+                // En sol şeritteyken havada tekrar sola basarsa Wall Run (Sol Duvar)
                 StartWallRun(-1);
             }
         }
-
-        // Sağa Geçiş veya Sağ Duvarda Koşma
-        if (swipeRight)
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (currentLane < 2) 
+            if (currentLane < 2)
             {
                 currentLane++;
-                if (isWallRunning) StopWallRun();
+                StopWallRun();
             }
-            else if (currentLane == 2 && !isWallRunning && !controller.isGrounded)
+            else if (currentLane == 2 && !controller.isGrounded && !isWallRunning)
             {
+                // En sağ şeritteyken havada tekrar sağa basarsa Wall Run (Sağ Duvar)
                 StartWallRun(1);
             }
         }
 
         // Zıplama
-        if (swipeUp && controller.isGrounded && !isSliding)
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
         {
-            Jump();
+            if (isWallRunning)
+            {
+                // Duvardan Zıplama (Düşüşü keser, tekrar havalanır)
+                StopWallRun();
+                Jump();
+            }
+            else if (controller.isGrounded && !isSliding)
+            {
+                Jump();
+            }
         }
 
         // Kayma
-        if (swipeDown && !isSliding && !isWallRunning)
+        if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
         {
-            StartSlide();
+            if (isWallRunning) StopWallRun();
+            
+            if (!isSliding)
+            {
+                if (slideCoroutine != null) StopCoroutine(slideCoroutine);
+                slideCoroutine = StartCoroutine(SlideRoutine());
+            }
         }
-        else if (swipeDown && isWallRunning)
+
+    }
+
+    private void CalculateVerticalMovement()
+    {
+        if (controller.isGrounded && verticalVelocity < 0 && !isWallRunning)
         {
-            StopWallRun(); // Duvardayken aşağı swipe yaparsa duvardan inip kaymaya başlasın
-            StartSlide();
+            verticalVelocity = -2f;
+            isJumping = false;
+        }
+        else
+        {
+            float currentGravity = isWallRunning ? (gravity * wallRunGravityMultiplier) : gravity;
+            verticalVelocity += currentGravity * Time.deltaTime;
         }
     }
 
     private void Jump()
     {
-        verticalVelocity = isOverclocked ? jumpForce * vaultJumpForceMultiplier : jumpForce;
+        verticalVelocity = jumpForce;
+        isJumping = true;
         OnJump?.Invoke();
     }
 
-    private void StartSlide()
+    private IEnumerator SlideRoutine()
     {
         isSliding = true;
-        slideTimer = slideDuration;
-
-        controller.height = originalHeight * slideHeightMultiplier;
-        controller.center = new Vector3(0, originalCenterY * slideHeightMultiplier, 0);
-
-        if (!controller.isGrounded)
-            verticalVelocity = -jumpForce * 1.5f;
-
         OnSlideStart?.Invoke();
-    }
 
-    private void HandleSlide()
-    {
-        if (isSliding)
+        // Havadaysa hızlıca yere in
+        if (!controller.isGrounded && !isWallRunning)
         {
-            slideTimer -= Time.deltaTime;
-            if (slideTimer <= 0)
-            {
-                isSliding = false;
-                controller.height = originalHeight;
-                controller.center = new Vector3(0, originalCenterY, 0);
-                OnSlideEnd?.Invoke();
-            }
+            verticalVelocity = -jumpForce * 1.5f;
         }
+
+        SetHeight(slideHeight);
+
+        yield return new WaitForSeconds(slideDuration);
+
+        SetHeight(normalHeight);
+        
+        isSliding = false;
+        OnSlideEnd?.Invoke();
     }
 
-    private void StartWallRun(int direction)
+    private void StartWallRun(int wallDirection)
     {
-        isWallRunning = true;
-        wallRunTimer = wallRunDuration;
-        wallRunDirection = direction;
+        if (isSliding) return;
 
-        // Düşüşü yavaşça baştan başlat
-        verticalVelocity = 0f; 
-        OnWallRunStart?.Invoke(direction);
+        isWallRunning = true;
+        verticalVelocity = Mathf.Max(verticalVelocity, 0f); // Düşüşü SFX/Görsel için anlık durdur (veya sekecekse tut)
+        OnWallRunStart?.Invoke(wallDirection);
+
+        if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
+        wallRunCoroutine = StartCoroutine(WallRunRoutine());
+    }
+
+    private IEnumerator WallRunRoutine()
+    {
+        yield return new WaitForSeconds(wallRunDuration);
+        StopWallRun();
     }
 
     private void StopWallRun()
     {
+        if (!isWallRunning) return;
         isWallRunning = false;
+        if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
         OnWallRunEnd?.Invoke();
     }
 
-    private void HandleWallRunAndGravity()
+    private void SetHeight(float newHeight)
     {
-        float currentGravity = isOverclocked ? gravity * vaultGravityMultiplier : gravity;
+        if (controller == null) return;
+        
+        // Karakterin Collider boyunu ayarla
+        controller.height = newHeight;
+        
+        // Kapsülün her zaman 'en alt' kısmının sabit kalması için Pivot merkezini hesaplıyoruz.
+        // Standart bir Unity kapsülünde pivot tam ortadadır, bunu ayaklardan esnetmek için center.y değişmelidir.
+        // Normal boyumuz 2, yeni boyumuz 1 ise -> ayak kısmını korumak için merkezi -0.5 aşağı kaydırıyoruz.
+        controller.center = new Vector3(0, (newHeight - normalHeight) / 2f, 0);
+    }
 
-        if (isWallRunning)
+    // --- DIŞ SİSTEMLERLE İLETİŞİM (PowerUps & GameManager) ---
+
+    public void ActivateDash(float duration, float boostSpeed)
+    {
+        StartCoroutine(DashRoutine(duration, boostSpeed));
+    }
+
+    private IEnumerator DashRoutine(float duration, float boostSpeed)
+    {
+        isInvincible = true;
+        float originalSpeed = forwardSpeed;
+        forwardSpeed = boostSpeed;
+
+        yield return new WaitForSeconds(duration);
+
+        forwardSpeed = originalSpeed;
+        isInvincible = false;
+    }
+
+    public void CollectPowerUp(PowerUpType type)
+    {
+        switch (type)
         {
-            wallRunTimer -= Time.deltaTime;
-            // Yerçekimi çok azalarak yavaşça aşağı kayma hissi verir
-            verticalVelocity += currentGravity * wallRunGravityMultiplier * Time.deltaTime; 
-
-            if (wallRunTimer <= 0 || controller.isGrounded)
-            {
-                StopWallRun();
-            }
+            case PowerUpType.Bomb: 
+                TriggerBomb(); 
+                break;
+            case PowerUpType.Dash: 
+                if(!isInvincible) ActivateDash(dashDuration, dashSpeed); 
+                break;
+            case PowerUpType.Health: 
+                healthShieldCount++; 
+                break;
+            case PowerUpType.Time: 
+                if(Time.timeScale >= 1f) StartCoroutine(TimeRoutine()); 
+                break;
         }
-        else
+    }
+
+    private void TriggerBomb()
+    {
+        if (bombEffectPrefab != null)
         {
-            if (controller.isGrounded && verticalVelocity < 0)
+            Instantiate(bombEffectPrefab, transform.position, Quaternion.identity);
+        }
+
+        GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        foreach (GameObject obs in allObstacles)
+        {
+            float zDiff = obs.transform.position.z - transform.position.z;
+            if (zDiff > 0 && zDiff <= bombClearDistance)
             {
-                verticalVelocity = -2f; // Yerde tutunma
-            }
-            else
-            {
-                verticalVelocity += currentGravity * Time.deltaTime;
+                Destroy(obs);
             }
         }
     }
 
-    // --- DIŞ DEVLET (EXTERNAL STATE) KONTROLLERİ ---
-    
-    public void SetOverclockState(bool state)
+    private IEnumerator TimeRoutine()
     {
-        isOverclocked = state;
+        Time.timeScale = timeScaleTarget;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale; 
+
+        yield return new WaitForSecondsRealtime(slowMotionDuration);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
+    }
+
+    public void ConsumeHealthShield()
+    {
+        healthShieldCount--;
+        // Kalkan kırılma efekti burada tetiklenebilir
     }
 
     public void SetForwardSpeed(float newSpeed)
     {
-        baseForwardSpeed = newSpeed;
-        currentForwardSpeed = baseForwardSpeed;
-    }
-
-    public void Die()
-    {
-        isDead = true;
-        currentForwardSpeed = 0f;
-    }
-
-    // Power-up: Kinetik Kalkan (Dash)
-    public void ActivateDash(float duration)
-    {
-        StartCoroutine(DashRoutine(duration));
-    }
-
-    private IEnumerator DashRoutine(float duration)
-    {
-        isInvincible = true;
-        yield return new WaitForSeconds(duration);
-        isInvincible = false;
-    }
-
-    // --- CARPISMA (COLLISION) KONTROLLERİ ---
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (isDead) return;
-
-        // Engel çarpışması
-        if (hit.gameObject.CompareTag("Obstacle"))
+        // Dash aktifken GameManager'dan gelen genel hız güncellemelerini yoksay
+        if (!isInvincible && !isDead)
         {
-            if (isInvincible)
-            {
-                // Kinetik Kalkan -> Engeli Yık
-                Destroy(hit.gameObject);
-                // Ses/Efekt eklenebilir
-            }
-            else
-            {
-                // Normal çarpışma - Fakat bu cam ise GlassObstacle scripti devreye girer
-                GlassObstacle glass = hit.gameObject.GetComponent<GlassObstacle>();
-                if (glass != null)
-                {
-                    glass.OnHit();
-                }
-                else
-                {
-                    GameManager.Instance.GameOver();
-                }
-            }
+            forwardSpeed = newSpeed;
         }
     }
 
-    // Trigger çarpışmaları (Collectible veya Trigger tabanlı tuzaklar için)
+    public float GetCurrentSpeed()
+    {
+        return forwardSpeed;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (isDead) return;
 
         if (other.CompareTag("Obstacle"))
         {
+            // 1. Durum: Dash aktifse engeli parçala / yoksay
             if (isInvincible)
             {
-                Destroy(other.gameObject);
+                Debug.Log("Dash aktif: Engel parçalandı!");
+                // İleride buraya engel parçalanma efekti veya Destroy(other.gameObject) eklenebilir.
+                return;
             }
-            else
+
+            // 2. Durum: Kalkan (Health) aktifse kalkanı kır ama hayatta kal
+            if (healthShieldCount > 0)
             {
-                GlassObstacle glass = other.GetComponent<GlassObstacle>();
-                if (glass != null)
-                {
-                    glass.OnHit();
-                }
-                else
-                {
-                    GameManager.Instance.GameOver();
-                }
+                Debug.Log("Kalkan kırıldı: Hayatta kalındı!");
+                // Kalkan kırılma efekti / sesi oynatılır
+                GameManager.Instance.HandleCollision(); // GameManager kalkan durumunu işleyip devam edecek
+                Destroy(other.gameObject); // Vurduğumuz engeli yokedelim ki içinden geçerken tekrar tetiklenmesin
+                return;
             }
+
+            // 3. Durum: İkisi de yoksa ÖLÜM
+            Die();
+            GameManager.Instance.HandleCollision(); // GameManager Game Over sürecini (HitStop vb) başlatacak
         }
-        else if (other.CompareTag("Coin") || other.CompareTag("DataCore"))
-        {
-            GameManager.Instance.CollectDataCore();
-            Destroy(other.gameObject);
-        }
+    }
+
+    public void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        forwardSpeed = 0f;
+        verticalVelocity = 0f; // Havadaysa olduğu yere yığılsın
+        
+        StopAllCoroutines();
+
+        // FPS Ölüm Hissi: Kameranın yere düşüşünü simüle etmek için event fırlatıyoruz
+        // (Bunu CameraController dinleyip işleyecek)
+        OnDeath?.Invoke();
     }
 }

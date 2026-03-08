@@ -8,6 +8,13 @@ public class CameraController : MonoBehaviour
     [Tooltip("Oyuncu kontrolcüsü (Events için)")]
     [SerializeField] private PlayerController player;
 
+    [Header("Head Bobbing Ayarları")]
+    [SerializeField] private float bobFrequency = 1.5f;
+    [SerializeField] private float bobAmplitudeX = 0.05f;
+    [SerializeField] private float bobAmplitudeY = 0.05f;
+    private float bobTimer = 0f;
+    private Vector3 defaultLocalPos;
+
     [Header("Slide Juice (Kayma Hissi)")]
     [SerializeField] private float slideFovIncrease = 15f;
     [SerializeField] private float slideTiltX = -10f; // Kamera yukarı bakar
@@ -23,16 +30,15 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float wallRunRollZ = 15f; 
     [SerializeField] private float wallRunTransitionSpeed = 8f;
 
-    [Header("Overclock Juice (Akış Hissi)")]
-    [SerializeField] private float overclockFovIncrease = 10f;
-    [SerializeField] private float overclockTransitionSpeed = 5f;
+    [Header("Dash (Kinetik Kalkan) Hissi")]
+    [SerializeField] private float dashFovIncrease = 30f;
+    [SerializeField] private float dashTransitionSpeed = 8f;
 
     // Temel değerler
     private float baseFov;
     private Quaternion baseLocalRotation;
     
     // Hedef değerler
-    private float targetFov;
     private float targetTiltX;
     private float targetRollZ;
 
@@ -53,8 +59,8 @@ public class CameraController : MonoBehaviour
 
         baseFov = cam.fieldOfView;
         baseLocalRotation = cam.transform.localRotation;
+        defaultLocalPos = cam.transform.localPosition;
         
-        targetFov = baseFov;
         targetTiltX = 0f;
         targetRollZ = 0f;
         currentLandShakeIntensity = landShakeIntensity;
@@ -87,19 +93,51 @@ public class CameraController : MonoBehaviour
     {
         UpdateJumpRestoration();
         UpdateShake();
+        Vector3 bobPos = CalculateHeadBobbing();
 
-        // Overclock kontrolü
-        float baseTargetFov = player != null && player.isOverclocked ? baseFov + overclockFovIncrease : baseFov;
-        // Slide FOV artışı Overclock FOV artışının üzerine eklenecek
+        // Dash veya Slide kontrolü
+        float baseTargetFov = player != null && player.isInvincible ? baseFov + dashFovIncrease : baseFov;
         float finalTargetFov = player != null && player.isSliding ? baseTargetFov + slideFovIncrease : baseTargetFov;
 
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, finalTargetFov, Time.deltaTime * (player != null && player.isSliding ? slideTransitionSpeed : overclockTransitionSpeed));
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, finalTargetFov, Time.deltaTime * (player != null && player.isSliding ? slideTransitionSpeed : dashTransitionSpeed));
+
+        // Eğer öldüysek kamerayı yere doğru devir (FPS yığılma hissi)
+        if (player != null && player.isDead)
+        {
+            targetTiltX = 60f; // Yere bak
+            targetRollZ = 25f; // Sola veya sağa yat
+        }
 
         Quaternion targetRot = Quaternion.Euler(targetTiltX, 0, targetRollZ);
-        currentRotationOffset = Quaternion.Slerp(currentRotationOffset, targetRot, Time.deltaTime * wallRunTransitionSpeed);
+        currentRotationOffset = Quaternion.Slerp(currentRotationOffset, targetRot, Time.deltaTime * (player != null && player.isDead ? 3f : wallRunTransitionSpeed));
         
         cam.transform.localRotation = baseLocalRotation * currentRotationOffset;
-        cam.transform.localPosition = shakeOffset; 
+        
+        // Final position (Default + Bobbing + Shake)
+        cam.transform.localPosition = defaultLocalPos + bobPos + shakeOffset; 
+    }
+
+    private Vector3 CalculateHeadBobbing()
+    {
+        if (player == null) return Vector3.zero;
+
+        // Karakter yerdeyse ve hareket ediyorsa bobbing yap (Z ekseninde koşuyor varsayıyoruz)
+        if (!player.isJumping && !player.isSliding && !player.isWallRunning)
+        {
+            float speedMultiplier = player.GetCurrentSpeed() / 20f; // 20f normal koşu hızı referansı
+            bobTimer += Time.deltaTime * bobFrequency * speedMultiplier;
+
+            float bobX = Mathf.Sin(bobTimer / 2f) * bobAmplitudeX;
+            float bobY = Mathf.Sin(bobTimer) * bobAmplitudeY;
+
+            return new Vector3(bobX, bobY, 0f);
+        }
+        else
+        {
+            // Havada veya kayıyorken bobbing'i sıfıra yumuşatarak çek
+            bobTimer = 0f;
+            return Vector3.Lerp(cam.transform.localPosition - defaultLocalPos - shakeOffset, Vector3.zero, Time.deltaTime * 5f);
+        }
     }
 
     private void UpdateShake()
@@ -150,7 +188,6 @@ public class CameraController : MonoBehaviour
     {
         // En sol şerit (Sol duvar: -1) -> Z ekseninde SAĞA (-15 derece) 
         // En sağ şerit (Sağ duvar: 1) -> Z ekseninde SOLA (+15 derece)
-        // Matematiksel olarak: direction * wallRunRollZ = 1 * 15 = 15 (pozitif = sol)
         targetRollZ = wallRunRollZ * direction; 
     }
 

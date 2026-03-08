@@ -23,6 +23,10 @@ public class ChunkSpawner : MonoBehaviour
     [Tooltip("Oyuncu bir tünelin içine ne kadar girdiğinde arkadaki havuza dönsün?")]
     public float recycleDistance = 30f;
 
+    [Header("Sistemler")]
+    [Tooltip("Opsiyonel: Sahneye güçlendirme atacak Spawner referansı")]
+    public PowerUpSpawner powerUpSpawner;
+
     // Sahnede aktif olan tünellerin listesi (sıralı dizilim)
     private List<GameObject> activeChunks = new List<GameObject>();
 
@@ -46,6 +50,12 @@ public class ChunkSpawner : MonoBehaviour
             return;
         }
 
+        // Eğer Inspector'dan powerUpSpawner atanmadıysa, sahnede aramayı dene
+        if (powerUpSpawner == null)
+        {
+            powerUpSpawner = FindObjectOfType<PowerUpSpawner>();
+        }
+
         InitializePool();
 
         // Oyun başladığında başlangıç tünellerini hizala ve aktifleştir
@@ -67,6 +77,12 @@ public class ChunkSpawner : MonoBehaviour
         {
             RecycleOldestChunk();
             SpawnChunk();
+
+            // Arkada kalan alınmamış PowerUpload'ları temizle
+            if (powerUpSpawner != null)
+            {
+                powerUpSpawner.CleanUpPowerUpsBehind(playerZ, recycleDistance);
+            }
         }
     }
 
@@ -78,8 +94,6 @@ public class ChunkSpawner : MonoBehaviour
             int randomIndex = Random.Range(0, tunnelPrefabs.Length);
             GameObject obj = Instantiate(tunnelPrefabs[randomIndex], Vector3.zero, Quaternion.identity);
             obj.transform.SetParent(this.transform);
-            
-            ApplyTheme(obj);
             
             obj.SetActive(false);
             chunkPool.Add(obj);
@@ -104,14 +118,22 @@ public class ChunkSpawner : MonoBehaviour
             int prefabIndex = Random.Range(0, tunnelPrefabs.Length);
             chunkToSpawn = Instantiate(tunnelPrefabs[prefabIndex], Vector3.zero, Quaternion.identity);
             chunkToSpawn.transform.SetParent(this.transform);
-            ApplyTheme(chunkToSpawn);
             Debug.LogWarning("ChunkSpawner: Havuz yetersiz kaldı, boyutu artırılmalı. Yeni üretildi.");
         }
 
+        // Z Ekseni Start Noktası (Kaydet)
+        float currentSpawnZ = nextSpawnZ;
+
         // Pozisyonla, aktifleştir ve listeye ekle
-        chunkToSpawn.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + nextSpawnZ);
+        chunkToSpawn.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + currentSpawnZ);
         chunkToSpawn.SetActive(true);
         activeChunks.Add(chunkToSpawn);
+
+        // PowerUp spawn mekaniğini tetikle (her tünel başına)
+        if (powerUpSpawner != null)
+        {
+            powerUpSpawner.TrySpawnPowerUpInChunk(transform.position.z + currentSpawnZ, chunkLength);
+        }
 
         // Z noktasını ilerlet
         nextSpawnZ += chunkLength;
@@ -127,22 +149,5 @@ public class ChunkSpawner : MonoBehaviour
         // Kapat ve havuza geri at (Sıfır Destroy mantığı)
         oldChunk.SetActive(false);
         chunkPool.Add(oldChunk);
-    }
-
-    private void ApplyTheme(GameObject chunk)
-    {
-        // Projedeki mevcut ThemeManager ile tünel materyalini entegre eder
-        if (ThemeManager.Instance != null)
-        {
-            Material tunnelMat = ThemeManager.Instance.GetTunnelMaterial();
-            if (tunnelMat != null)
-            {
-                MeshRenderer[] renderers = chunk.GetComponentsInChildren<MeshRenderer>();
-                foreach (MeshRenderer r in renderers)
-                {
-                    r.material = tunnelMat;
-                }
-            }
-        }
     }
 }
