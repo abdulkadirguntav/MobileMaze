@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Duvarda kalma süresi")]
     [SerializeField] private float wallRunDuration = 1.2f;
     [Tooltip("Duvar koşusunda yerçekimi çarpanı (Örn: 0 ise düşmez, 0.2 ise yavaş düşer)")]
-    [SerializeField] private float wallRunGravityMultiplier = 0f;
+    [SerializeField] private float wallRunGravityMultiplier = 0.2f;
 
     // Bileşenler ve Sabit Değerler
     private UnityEngine.CharacterController controller;
@@ -297,13 +297,34 @@ public class PlayerController : MonoBehaviour
             Instantiate(bombEffectPrefab, transform.position, Quaternion.identity);
         }
 
-        GameObject[] allObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
-        foreach (GameObject obs in allObstacles)
+        // Unity'de kapalı (SetActive(false)) objeler FindGameObjectsWithTag ile BULUNAMAZ!
+        // Bu yüzden tünelleri (ChunkSpawner) bularak, onun içindeki kapalı objeleri tarıyoruz.
+        ChunkSpawner spawner = FindObjectOfType<ChunkSpawner>();
+        if (spawner != null)
         {
-            float zDiff = obs.transform.position.z - transform.position.z;
-            if (zDiff > 0 && zDiff <= bombClearDistance)
+            // Spawner'ın altındaki tüm tünelleri dön
+            foreach (Transform chunk in spawner.transform)
             {
-                Destroy(obs);
+                // Sadece Sahnede o an aktif olan tünelleri tara
+                if (!chunk.gameObject.activeInHierarchy) continue;
+
+                // Tünelin içindeki TÜM objeleri (Kapalılar Dahil -> 'true' parametresi ile) al
+                Transform[] allChildren = chunk.GetComponentsInChildren<Transform>(true);
+                foreach (Transform child in allChildren)
+                {
+                    float zDiff = child.position.z - transform.position.z;
+                    if (zDiff > 0 && zDiff <= bombClearDistance)
+                    {
+                        if (child.CompareTag("Obstacle"))
+                        {
+                            child.gameObject.SetActive(false);
+                        }
+                        else if (child.CompareTag("SecretObject"))
+                        {
+                            child.gameObject.SetActive(true);
+                        }
+                    }
+                }
             }
         }
     }

@@ -149,5 +149,31 @@ public class ChunkSpawner : MonoBehaviour
         // Kapat ve havuza geri at (Sıfır Destroy mantığı)
         oldChunk.SetActive(false);
         chunkPool.Add(oldChunk);
+
+        // --- OBJECT POOLING RESETLEME MANTIĞI ---
+        // Tünel tekrar kullanılmadan önce, içinde daha önce Player tarafından yokedilmiş (gizlenmiş)
+        // engeller (Obstacle) varsa geri aç. Gizli objeler (SecretObject) açılmışsa geri kapa.
+        ResetChunkState(oldChunk.transform);
+    }
+
+    private void ResetChunkState(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.CompareTag("Obstacle"))
+            {
+                child.gameObject.SetActive(true); // Engeli geri getir
+            }
+            else if (child.CompareTag("SecretObject"))
+            {
+                child.gameObject.SetActive(false); // Sırrı tekrar gizle
+            }
+
+            // Kendi içinde alt objeleri (çocukları) varsa onlar için de aynı işlemi yap
+            if (child.childCount > 0)
+            {
+                ResetChunkState(child);
+            }
+        }
     }
 }
