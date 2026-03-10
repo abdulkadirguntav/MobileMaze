@@ -23,10 +23,6 @@ public class ChunkSpawner : MonoBehaviour
     [Tooltip("Oyuncu bir tünelin içine ne kadar girdiğinde arkadaki havuza dönsün?")]
     public float recycleDistance = 30f;
 
-    [Header("Sistemler")]
-    [Tooltip("Opsiyonel: Sahneye güçlendirme atacak Spawner referansı")]
-    public PowerUpSpawner powerUpSpawner;
-
     // Sahnede aktif olan tünellerin listesi (sıralı dizilim)
     private List<GameObject> activeChunks = new List<GameObject>();
 
@@ -50,12 +46,6 @@ public class ChunkSpawner : MonoBehaviour
             return;
         }
 
-        // Eğer Inspector'dan powerUpSpawner atanmadıysa, sahnede aramayı dene
-        if (powerUpSpawner == null)
-        {
-            powerUpSpawner = FindObjectOfType<PowerUpSpawner>();
-        }
-
         InitializePool();
 
         // Oyun başladığında başlangıç tünellerini hizala ve aktifleştir
@@ -77,12 +67,6 @@ public class ChunkSpawner : MonoBehaviour
         {
             RecycleOldestChunk();
             SpawnChunk();
-
-            // Arkada kalan alınmamış PowerUpload'ları temizle
-            if (powerUpSpawner != null)
-            {
-                powerUpSpawner.CleanUpPowerUpsBehind(playerZ, recycleDistance);
-            }
         }
     }
 
@@ -128,12 +112,6 @@ public class ChunkSpawner : MonoBehaviour
         chunkToSpawn.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + currentSpawnZ);
         chunkToSpawn.SetActive(true);
         activeChunks.Add(chunkToSpawn);
-
-        // PowerUp spawn mekaniğini tetikle (her tünel başına)
-        if (powerUpSpawner != null)
-        {
-            powerUpSpawner.TrySpawnPowerUpInChunk(transform.position.z + currentSpawnZ, chunkLength);
-        }
 
         // Z noktasını ilerlet
         nextSpawnZ += chunkLength;
