@@ -79,6 +79,8 @@ public class ChunkSpawner : MonoBehaviour
             GameObject obj = Instantiate(tunnelPrefabs[randomIndex], Vector3.zero, Quaternion.identity);
             obj.transform.SetParent(this.transform);
             
+            ResetChunkState(obj.transform); // Fail-safe: İlk yaratılışta trigger ve aktiflik ayarlarını yap
+            
             obj.SetActive(false);
             chunkPool.Add(obj);
         }
@@ -102,6 +104,7 @@ public class ChunkSpawner : MonoBehaviour
             int prefabIndex = Random.Range(0, tunnelPrefabs.Length);
             chunkToSpawn = Instantiate(tunnelPrefabs[prefabIndex], Vector3.zero, Quaternion.identity);
             chunkToSpawn.transform.SetParent(this.transform);
+            ResetChunkState(chunkToSpawn.transform); // Fail-safe
             Debug.LogWarning("ChunkSpawner: Havuz yetersiz kaldı, boyutu artırılmalı. Yeni üretildi.");
         }
 
@@ -141,6 +144,13 @@ public class ChunkSpawner : MonoBehaviour
             if (child.CompareTag("Obstacle"))
             {
                 child.gameObject.SetActive(true); // Engeli geri getir
+                
+                // FAIL-SAFE: Fiziksel çarpışmayı (sekme/duvara toslama) önlemek için her zaman trigger yap
+                Collider col = child.GetComponent<Collider>();
+                if (col != null && !col.isTrigger)
+                {
+                    col.isTrigger = true;
+                }
             }
             else if (child.CompareTag("SecretObject"))
             {

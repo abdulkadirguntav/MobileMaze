@@ -46,14 +46,20 @@ public class PlayerController : MonoBehaviour
     
     // Güçlendirme Envanteri & Durumları
     public bool isInvincible { get; private set; } = false;
+    public bool isAcrobaticDodging { get; private set; } = false;
     
     [Header("Güçlendirme Envanteri (Debug)")]
     public int healthShieldCount { get; private set; } = 0;
 
+    [Header("QTE & Auto-Boost Ayarları")]
+    public float autoBoostCooldown = 120f;
+    private float currentBoostTimer;
+    private bool inTimingZone = false;
+
     [Header("Güçlendirme Ayarları")]
     [SerializeField] private float dashDuration = 5f;
     [SerializeField] private float dashSpeed = 50f;
-    [SerializeField] private float slowMotionDuration = 4f;
+    public float slowMotionDuration = 4f;
     [SerializeField] private float timeScaleTarget = 0.4f;
     [Tooltip("Bomba patladığında önündeki kaç birimlik engeli silecek?")]
     [SerializeField] private float bombClearDistance = 100f;
@@ -76,12 +82,14 @@ public class PlayerController : MonoBehaviour
     {
         controller = GetComponent<UnityEngine.CharacterController>();
         SetHeight(normalHeight);
+        currentBoostTimer = autoBoostCooldown;
     }
 
     void Update()
     {
         if (isDead) return;
 
+        UpdateAutoBoostTimer();
         HandleInput();
         CalculateVerticalMovement();
 
@@ -114,9 +122,12 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
+        bool actionTaken = false;
+
         // Şerit Değiştirme (X Ekseninde Sol/Sağ) veya Wall Run Başlatma
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
+            actionTaken = true;
             if (currentLane > 0)
             {
                 currentLane--;
@@ -130,6 +141,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
+            actionTaken = true;
             if (currentLane < 2)
             {
                 currentLane++;
@@ -145,6 +157,7 @@ public class PlayerController : MonoBehaviour
         // Zıplama
         if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
         {
+            actionTaken = true;
             if (isWallRunning)
             {
                 // Duvardan Zıplama (Düşüşü keser, tekrar havalanır)
@@ -160,6 +173,7 @@ public class PlayerController : MonoBehaviour
         // Kayma
         if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
         {
+            actionTaken = true;
             if (isWallRunning) StopWallRun();
             
             if (!isSliding)
@@ -169,6 +183,47 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (actionTaken)
+        {
+            TryAcrobaticDodge();
+        }
+    }
+
+    private void UpdateAutoBoostTimer()
+    {
+        if (isInvincible) return; // Zaten Boost (Ölümsüzlük) modundaysa sayma
+
+        currentBoostTimer -= Time.deltaTime;
+        if (currentBoostTimer <= 0f)
+        {
+            currentBoostTimer = autoBoostCooldown;
+            ActivateDash(dashDuration, dashSpeed);
+            Debug.Log("AUTO-BOOST AKTİF! Oynanış Hızlanıyor!");
+        }
+    }
+
+    public void SetTimingZoneStatus(bool status)
+    {
+        inTimingZone = status;
+    }
+
+    private void TryAcrobaticDodge()
+    {
+        if (inTimingZone)
+        {
+            Debug.Log("QTE BAŞARILI! Akrobatik Geçiş: +100 Puan!");
+            inTimingZone = false; // Tek bir engel için bir defa puan verilir
+            
+            // Şov Senaryosu: Kısa süreliğine engelin içinden geçme hakkı
+            StartCoroutine(AcrobaticInvincibilityRoutine());
+        }
+    }
+
+    private IEnumerator AcrobaticInvincibilityRoutine()
+    {
+        isAcrobaticDodging = true;
+        yield return new WaitForSeconds(0.4f); // Engelin içinden zararsız geçmek için süre
+        isAcrobaticDodging = false;
     }
 
     private void CalculateVerticalMovement()
@@ -278,9 +333,6 @@ public class PlayerController : MonoBehaviour
             case PowerUpType.Bomb: 
                 TriggerBomb(); 
                 break;
-            case PowerUpType.Dash: 
-                if(!isInvincible) ActivateDash(dashDuration, dashSpeed); 
-                break;
             case PowerUpType.Health: 
                 healthShieldCount++; 
                 break;
@@ -366,27 +418,34 @@ public class PlayerController : MonoBehaviour
 
         if (other.CompareTag("Obstacle"))
         {
-            // 1. Durum: Dash aktifse engeli parçala / yoksay
+            // Senaryo 3: Juggernaut Senaryosu (Auto-Boost aktif)
             if (isInvincible)
             {
-                Debug.Log("Dash aktif: Engel parçalandı!");
-                // İleride buraya engel parçalanma efekti veya Destroy(other.gameObject) eklenebilir.
+                Debug.Log("Juggernaut Modu: Engel parçalandı!");
+                other.gameObject.SetActive(false); // Engeli ezip geçer (kırar)
                 return;
             }
 
-            // 2. Durum: Kalkan (Health) aktifse kalkanı kır ama hayatta kal
+            // Senaryo 2: Şov Senaryosu (QTE başarılı, animasyonda)
+            if (isAcrobaticDodging)
+            {
+                Debug.Log("Şov Modu: Engelden zararsızca sıyrıldı!");
+                // Çarpmıyoruz, yavaşlamıyoruz, içinden estetikle kayıp geçiyoruz
+                return;
+            }
+
+            // Kurtarıcı: Kalkan (Health) aktifse kalkanı kır ama hayatta kal
             if (healthShieldCount > 0)
             {
                 Debug.Log("Kalkan kırıldı: Hayatta kalındı!");
-                // Kalkan kırılma efekti / sesi oynatılır
-                GameManager.Instance.HandleCollision(); // GameManager kalkan durumunu işleyip devam edecek
-                Destroy(other.gameObject); // Vurduğumuz engeli yokedelim ki içinden geçerken tekrar tetiklenmesin
+                GameManager.Instance.HandleCollision(); 
+                other.gameObject.SetActive(false); // Vurduğumuz engeli kapatalım (Pooling uyumlu)
                 return;
             }
 
-            // 3. Durum: İkisi de yoksa ÖLÜM
+            // Senaryo 1: Normal Senaryo (Başarısız Zamanlama & Boost Yok & Kalkan Yok) -> ÖLÜM
             Die();
-            GameManager.Instance.HandleCollision(); // GameManager Game Over sürecini (HitStop vb) başlatacak
+            GameManager.Instance.HandleCollision(); // GameManager Game Over sürecini başlatacak
         }
     }
 

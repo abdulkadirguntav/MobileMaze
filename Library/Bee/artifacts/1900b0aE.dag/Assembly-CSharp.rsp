@@ -431,6 +431,8 @@
 "Assets/Scripts/PowerUp.cs"
 "Assets/Scripts/SawLauncher.cs"
 "Assets/Scripts/SawProjectile.cs"
+"Assets/Scripts/ShopManager.cs"
+"Assets/Scripts/TimingZone.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01_UGUI.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark02.cs"

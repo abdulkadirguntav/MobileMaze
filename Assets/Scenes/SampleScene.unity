@@ -1654,6 +1654,7 @@ GameObject:
   - component: {fileID: 669709429}
   - component: {fileID: 669709435}
   - component: {fileID: 669709436}
+  - component: {fileID: 669709437}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1924,12 +1925,33 @@ MonoBehaviour:
   slideHeight: 1
   wallRunDuration: 1.2
   wallRunGravityMultiplier: 0.2
+  autoBoostCooldown: 120
   dashDuration: 5
   dashSpeed: 50
   slowMotionDuration: 4
   timeScaleTarget: 0.4
   bombClearDistance: 100
   bombEffectPrefab: {fileID: 0}
+--- !u!114 &669709437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 669709428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69893c21ea7a88b4aa1ba06fe345f69f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBoostActive: 0
+  coinCount: 0
+  OnBoostGapSuccess:
+    m_PersistentCalls:
+      m_Calls: []
+  OnGameOver:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &684468584
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2818,11 +2840,7 @@ MonoBehaviour:
   tunnelPrefabs:
   - {fileID: 7221045053706787979, guid: 590adf242a856a9499f618d0307a8b6d, type: 3}
   - {fileID: 7221045053706787979, guid: 3be9d4a32a7b5304fbe16b172fb75fa1, type: 3}
-  - {fileID: 7221045053706787979, guid: f5c2931db54e9d841a257eccef500198, type: 3}
-  - {fileID: 7221045053706787979, guid: 97a6484d44552fd4cb9ce2f774e82450, type: 3}
-  - {fileID: 7221045053706787979, guid: ffb43b61e7433eb48aef5c9ff6c5eb5b, type: 3}
-  - {fileID: 7221045053706787979, guid: 1a6ca6aa63092214cb3c4ee855799c29, type: 3}
-  - {fileID: 7221045053706787979, guid: a050c0f69c8825f40afc77027b558dc7, type: 3}
+  - {fileID: 7221045053706787979, guid: b866f2fab664477489b889ab2633a03d, type: 3}
   chunkLength: 25
   activeChunkCount: 5
   initialPoolSize: 15

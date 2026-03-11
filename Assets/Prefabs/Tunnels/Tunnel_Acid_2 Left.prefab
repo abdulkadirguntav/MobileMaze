@@ -6094,7 +6094,6 @@ MonoBehaviour:
   coinPrefab: {fileID: 7349704204916828243, guid: 121eb1c4b9b504643bb0e8b24e06dc6d, type: 3}
   powerUpPrefabs:
   - {fileID: 3865171439546893188, guid: 7dae98f83ad30ec4d81ab8d9411ae9f3, type: 3}
-  - {fileID: 3391243293367743772, guid: efcc8a96cea545043806aed25cf5ee0d, type: 3}
   - {fileID: 1492858311840834485, guid: c2ee6a81444de9f4b94f25bf0eef16e2, type: 3}
   - {fileID: 549068465953342166, guid: 062bd814970452b45903ea450000db75, type: 3}
   emptyChance: 70

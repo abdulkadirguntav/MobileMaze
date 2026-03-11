@@ -3,7 +3,6 @@ using UnityEngine;
 public enum PowerUpType
 {
     Bomb,   // Önündeki engelleri yok eder
-    Dash,   // Hızlanır ve ölümsüz olur
     Health, // Bir çarpışmayı tolere eder (Kalkan)
     Time    // Zamanı yavaşlatır
 }
