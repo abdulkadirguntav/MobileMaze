@@ -5012,6 +5012,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &4706096430026275845
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8935719638202135242}
+  m_Layer: 0
+  m_Name: Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8935719638202135242
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4706096430026275845}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.642057, y: -5, z: -0.97658575}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3157953206827055122}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4789274052528374716
 GameObject:
   m_ObjectHideFlags: 0
@@ -5599,6 +5630,7 @@ Transform:
   - {fileID: 58622078797217464}
   - {fileID: 7952299003246517513}
   - {fileID: 5067079685117676879}
+  - {fileID: 8935719638202135242}
   m_Father: {fileID: 4673081863473882488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5372909250375776073
@@ -6558,6 +6590,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4673081863473882488}
+  - component: {fileID: 3405430761667746949}
   m_Layer: 0
   m_Name: Tunnel_Acid_Big
   m_TagString: Untagged
@@ -6585,6 +6618,29 @@ Transform:
   - {fileID: 3318957652270679007}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3405430761667746949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7221045053706787979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e622b78c25f74614a81462647f4922c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnPoints:
+  - {fileID: 8935719638202135242}
+  coinPrefab: {fileID: 7349704204916828243, guid: 121eb1c4b9b504643bb0e8b24e06dc6d, type: 3}
+  powerUpPrefabs:
+  - {fileID: 3865171439546893188, guid: 7dae98f83ad30ec4d81ab8d9411ae9f3, type: 3}
+  - {fileID: 3391243293367743772, guid: efcc8a96cea545043806aed25cf5ee0d, type: 3}
+  - {fileID: 1492858311840834485, guid: c2ee6a81444de9f4b94f25bf0eef16e2, type: 3}
+  - {fileID: 549068465953342166, guid: 062bd814970452b45903ea450000db75, type: 3}
+  emptyChance: 70
+  coinChance: 10
+  powerUpChance: 20
 --- !u!1 &7396149642947325162
 GameObject:
   m_ObjectHideFlags: 0

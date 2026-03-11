@@ -20,11 +20,22 @@ public class ItemSpawner : MonoBehaviour
 
     // Sahnede üretilen eşyaları havuz temizliği için hafızada tutarız
     private List<GameObject> spawnedItems = new List<GameObject>();
+    private bool hasStarted = false;
+
+    private void Start()
+    {
+        hasStarted = true;
+        SpawnItems(); // İlk yaratılış (Instantiate) anında eşyaları bas
+    }
 
     // ChunkSpawner tarafından bu tünel sahneye çıkarıldığında (Object Pooling - Aktif olduğunda) çalışır
     private void OnEnable()
     {
-        SpawnItems();
+        // Start'tan önce OnEnable çalışır, ilk Instantiate anında çifte spawn olmasını engelliyoruz.
+        if (hasStarted)
+        {
+            SpawnItems();
+        }
     }
 
     // Tünel oyuncunun arkasında kalıp havuza geri atıldığında (Deaktif olduğunda) çalışır

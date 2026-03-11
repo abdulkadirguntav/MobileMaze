@@ -7,7 +7,7 @@ public class SawLauncher : MonoBehaviour
     public GameObject sawPrefab; // Fırlatılacak testere prefabı
     public Transform[] firePoints; // 3 adet çıkış noktası (Üst, Orta, Alt)
     public MeshRenderer[] warningLights; // 3 adet ışık objesi
-    public float fireRate = 1.5f; // Kaç saniyede bir testere atsın?
+    public float fireRate = 3f; // Kaç saniyede bir testere atsın?
 
     [Header("Renkler")]
     public Material redMat;    // Ateş eden bölmenin ışığı

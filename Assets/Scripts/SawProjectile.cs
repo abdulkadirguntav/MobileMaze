@@ -4,7 +4,7 @@ public class SawProjectile : MonoBehaviour
 {
     public float moveSpeed = 15f; // Karşı duvara uçma hızı
     public float rotationSpeed = 720f; // Kendi etrafında dönme hızı (720 derece = saniyede 2 tur)
-    public float lifeTime = 2f; // Testere kaç saniye sonra silinsin?
+    public float lifeTime = 4f; // Testere kaç saniye sonra silinsin?
 
     void Start()
     {
