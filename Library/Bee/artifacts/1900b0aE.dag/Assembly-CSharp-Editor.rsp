@@ -432,6 +432,7 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.67f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.67f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
 "Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs"
+"Assets/UnityTechnologies/ParticlePack/Shared/Ramps/Editor/RampAssetEditor.cs"
 -langversion:9.0
 /deterministic
 /optimize+

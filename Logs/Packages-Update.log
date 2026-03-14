@@ -93,3 +93,24 @@ The following packages were added:
   com.unity.modules.xr@1.0.0
   com.unity.modules.accessibility@1.0.0
   com.unity.multiplayer.center@1.0.0
+
+=== Fri Mar 13 17:24:11 2026
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.render-pipelines.universal from version 17.0.3 to 17.0.4
+  com.unity.render-pipelines.core from version 17.0.3 to 17.0.4
+  com.unity.shadergraph from version 17.0.3 to 17.0.4
+
+=== Fri Mar 13 17:24:11 2026
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.render-pipelines.core@17.0.4
+  com.unity.render-pipelines.universal-config@17.0.3
+  com.unity.rendering.light-transport@1.0.1
+  com.unity.shadergraph@17.0.4
