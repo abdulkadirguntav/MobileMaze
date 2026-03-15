@@ -47,9 +47,6 @@ public class PlayerController : MonoBehaviour
     // Güçlendirme Envanteri & Durumları
     public bool isInvincible { get; private set; } = false;
     public bool isAcrobaticDodging { get; private set; } = false;
-    
-    [Header("Güçlendirme Envanteri (Debug)")]
-    public int healthShieldCount { get; private set; } = 0;
 
     [Header("QTE & Auto-Boost Ayarları")]
     public float autoBoostCooldown = 120f;
@@ -59,11 +56,6 @@ public class PlayerController : MonoBehaviour
     [Header("Güçlendirme Ayarları")]
     [SerializeField] private float dashDuration = 5f;
     [SerializeField] private float dashSpeed = 50f;
-    public float slowMotionDuration = 4f;
-    [SerializeField] private float timeScaleTarget = 0.4f;
-    [Tooltip("Bomba patladığında önündeki kaç birimlik engeli silecek?")]
-    [SerializeField] private float bombClearDistance = 100f;
-    [SerializeField] private GameObject bombEffectPrefab;
 
     // Etkinlikler (FPS Kamera için)
     public event Action OnJump;
@@ -326,78 +318,6 @@ public class PlayerController : MonoBehaviour
         isInvincible = false;
     }
 
-    public void CollectPowerUp(PowerUpType type)
-    {
-        switch (type)
-        {
-            case PowerUpType.Bomb: 
-                TriggerBomb(); 
-                break;
-            case PowerUpType.Health: 
-                healthShieldCount++; 
-                break;
-            case PowerUpType.Time: 
-                if(Time.timeScale >= 1f) StartCoroutine(TimeRoutine()); 
-                break;
-        }
-    }
-
-    private void TriggerBomb()
-    {
-        if (bombEffectPrefab != null)
-        {
-            Instantiate(bombEffectPrefab, transform.position, Quaternion.identity);
-        }
-
-        // Unity'de kapalı (SetActive(false)) objeler FindGameObjectsWithTag ile BULUNAMAZ!
-        // Bu yüzden tünelleri (ChunkSpawner) bularak, onun içindeki kapalı objeleri tarıyoruz.
-        ChunkSpawner spawner = FindObjectOfType<ChunkSpawner>();
-        if (spawner != null)
-        {
-            // Spawner'ın altındaki tüm tünelleri dön
-            foreach (Transform chunk in spawner.transform)
-            {
-                // Sadece Sahnede o an aktif olan tünelleri tara
-                if (!chunk.gameObject.activeInHierarchy) continue;
-
-                // Tünelin içindeki TÜM objeleri (Kapalılar Dahil -> 'true' parametresi ile) al
-                Transform[] allChildren = chunk.GetComponentsInChildren<Transform>(true);
-                foreach (Transform child in allChildren)
-                {
-                    float zDiff = child.position.z - transform.position.z;
-                    if (zDiff > 0 && zDiff <= bombClearDistance)
-                    {
-                        if (child.CompareTag("Obstacle"))
-                        {
-                            child.gameObject.SetActive(false);
-                        }
-                        else if (child.CompareTag("SecretObject"))
-                        {
-                            child.gameObject.SetActive(true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private IEnumerator TimeRoutine()
-    {
-        Time.timeScale = timeScaleTarget;
-        Time.fixedDeltaTime = 0.02f * Time.timeScale; 
-
-        yield return new WaitForSecondsRealtime(slowMotionDuration);
-
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = 0.02f;
-    }
-
-    public void ConsumeHealthShield()
-    {
-        healthShieldCount--;
-        // Kalkan kırılma efekti burada tetiklenebilir
-    }
-
     public void SetForwardSpeed(float newSpeed)
     {
         // Dash aktifken GameManager'dan gelen genel hız güncellemelerini yoksay
@@ -434,16 +354,7 @@ public class PlayerController : MonoBehaviour
                 return;
             }
 
-            // Kurtarıcı: Kalkan (Health) aktifse kalkanı kır ama hayatta kal
-            if (healthShieldCount > 0)
-            {
-                Debug.Log("Kalkan kırıldı: Hayatta kalındı!");
-                GameManager.Instance.HandleCollision(); 
-                other.gameObject.SetActive(false); // Vurduğumuz engeli kapatalım (Pooling uyumlu)
-                return;
-            }
-
-            // Senaryo 1: Normal Senaryo (Başarısız Zamanlama & Boost Yok & Kalkan Yok) -> ÖLÜM
+            // Senaryo 1: Normal Senaryo (Başarısız Zamanlama & Boost Yok) -> ÖLÜM
             Die();
             GameManager.Instance.HandleCollision(); // GameManager Game Over sürecini başlatacak
         }

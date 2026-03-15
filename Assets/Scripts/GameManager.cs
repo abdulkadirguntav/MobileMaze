@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     [Header("Audio System")]
     public AudioSource bgmAudioSource;
     public AudioClip crashSfxClip;
-    public AudioClip shieldBreakSfxClip; // Yeni: Kalkan kırılma sesi
 
     [Header("Game State")]
     public bool isGameOver { get; private set; } = false;
@@ -82,19 +81,9 @@ public class GameManager : MonoBehaviour
                 return; 
             }
 
-            // Eğer Health PowerUp kalkanı aktifse kalkan kırılır ama oyun devam eder
-            if (playerController.healthShieldCount > 0)
-            {
-                playerController.ConsumeHealthShield();
-                
-                if (shieldBreakSfxClip != null)
-                    AudioSource.PlayClipAtPoint(shieldBreakSfxClip, Camera.main != null ? Camera.main.transform.position : transform.position);
-                
-                return;
-            }
         }
 
-        // Kalkan ve Dash yoksa oyun biter
+        // Dash (Auto-Boost) yoksa oyun biter
         GameOver();
     }
 

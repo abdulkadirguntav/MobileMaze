@@ -15,14 +15,12 @@ public class ShopManager : MonoBehaviour
     public int equippedGloveIndex = 0;
 
     // GÜÇLENDİRME SEVİYELERİ
-    public int timeUpgradeLevel = 0; // 0: Normal, 1: Gelişmiş
     public int boostUpgradeLevel = 0; // 0: 120sn, 1: 110sn
 
     // --- MARKET FİYATLARI ---
     [Header("Fiyatlandırma")]
     public int priceCarbonGlove = 2000;
     public int priceGoldGlove = 10000;
-    public int priceTimeUpgrade = 5000;
     public int priceBoostUpgrade = 8000;
 
     private void Awake()
@@ -125,27 +123,6 @@ public class ShopManager : MonoBehaviour
     // 2. GÜÇLENDİRME: MEKANİK GELİŞTİRMELERİ
     // ==========================================
 
-    public void BuyTimeUpgrade()
-    {
-        if (timeUpgradeLevel == 1)
-        {
-            Debug.Log("Zaman Bükücü zaten maksimum seviyede!");
-            return;
-        }
-
-        if (totalCoins >= priceTimeUpgrade)
-        {
-            totalCoins -= priceTimeUpgrade;
-            timeUpgradeLevel = 1;
-            SaveData();
-            ApplyUpgradesToPlayer();
-            Debug.Log("Zaman Bükücü Lvl 2 Satın Alındı! Artık süre daha yavaş akacak.");
-        }
-        else
-        {
-            Debug.LogWarning("Yetersiz Bakiye! Gereken: " + priceTimeUpgrade + " | Senin: " + totalCoins);
-        }
-    }
 
     public void BuyBoostUpgrade()
     {
@@ -180,11 +157,6 @@ public class ShopManager : MonoBehaviour
             {
                 player.autoBoostCooldown = 110f; // 120'den 110'a düşürdük
             }
-            
-            if (timeUpgradeLevel == 1)
-            {
-                player.slowMotionDuration = 8f; // Normal sürenin örneğin 2 katı
-            }
         }
     }
 
@@ -209,7 +181,6 @@ public class ShopManager : MonoBehaviour
         PlayerPrefs.SetInt("HasGoldGlove", hasGoldGlove);
         PlayerPrefs.SetInt("EquippedGloveIndex", equippedGloveIndex);
         
-        PlayerPrefs.SetInt("TimeUpgradeLevel", timeUpgradeLevel);
         PlayerPrefs.SetInt("BoostUpgradeLevel", boostUpgradeLevel);
 
         PlayerPrefs.Save();
@@ -224,7 +195,6 @@ public class ShopManager : MonoBehaviour
         hasGoldGlove = PlayerPrefs.GetInt("HasGoldGlove", 0);
         equippedGloveIndex = PlayerPrefs.GetInt("EquippedGloveIndex", 0);
 
-        timeUpgradeLevel = PlayerPrefs.GetInt("TimeUpgradeLevel", 0);
         boostUpgradeLevel = PlayerPrefs.GetInt("BoostUpgradeLevel", 0);
 
         // Yüklendikten sonra statüleri oyuna yansıt

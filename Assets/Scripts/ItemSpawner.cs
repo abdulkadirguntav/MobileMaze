@@ -10,13 +10,10 @@ public class ItemSpawner : MonoBehaviour
     [Header("2. Üretilecek Objeler (Prefablar)")]
     [Tooltip("Altın/Coin Prefabı")]
     public GameObject coinPrefab;
-    [Tooltip("Listeden rastgele seçilecek PowerUp Prefabları")]
-    public GameObject[] powerUpPrefabs;
 
     [Header("3. İhtimaller (Toplam 100 Olmalı)")]
     [Range(0, 100)] public float emptyChance = 70f;
-    [Range(0, 100)] public float coinChance = 10f;
-    [Range(0, 100)] public float powerUpChance = 20f;
+    [Range(0, 100)] public float coinChance = 30f;
 
     // Sahnede üretilen eşyaları havuz temizliği için hafızada tutarız
     private List<GameObject> spawnedItems = new List<GameObject>();
@@ -49,7 +46,7 @@ public class ItemSpawner : MonoBehaviour
         if (spawnPoints == null || spawnPoints.Count == 0) return;
 
         // Her ihtimale karşı yüzdeleri toplamına göre normalize edelim ki mantık hatası olmasın
-        float totalWeight = emptyChance + coinChance + powerUpChance;
+        float totalWeight = emptyChance + coinChance;
 
         foreach (Transform point in spawnPoints)
         {
@@ -62,21 +59,12 @@ public class ItemSpawner : MonoBehaviour
                 // Zarlar "Boş İhtimaline" denk geldi, bu noktaya hiçbir şey üretme
                 continue;
             }
-            else if (randomVal <= emptyChance + coinChance)
+            else
             {
                 // Zarlar "Altın (Coin)" ihtimaline denk geldi
                 if (coinPrefab != null)
                 {
                     spawnedObj = Instantiate(coinPrefab, point.position, point.rotation, point);
-                }
-            }
-            else
-            {
-                // Zarlar "Power-Up" ihtimaline denk geldi
-                if (powerUpPrefabs != null && powerUpPrefabs.Length > 0)
-                {
-                    int randIdx = Random.Range(0, powerUpPrefabs.Length);
-                    spawnedObj = Instantiate(powerUpPrefabs[randIdx], point.position, point.rotation, point);
                 }
             }
 
@@ -90,7 +78,7 @@ public class ItemSpawner : MonoBehaviour
 
     private void ClearItems()
     {
-        // Tünel havuza giderken içinde kalan alınmamış Altın ve PowerUpları yok et ki birikmesin
+        // Tünel havuza giderken içinde kalan alınmamış Altınları yok et ki birikmesin
         foreach (GameObject item in spawnedItems)
         {
             if (item != null)
