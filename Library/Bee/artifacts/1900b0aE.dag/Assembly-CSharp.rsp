@@ -429,8 +429,6 @@
 "Assets/Scripts/ItemSpawner.cs"
 "Assets/Scripts/PlayerController.cs"
 "Assets/Scripts/PowerUp.cs"
-"Assets/Scripts/SawLauncher.cs"
-"Assets/Scripts/SawProjectile.cs"
 "Assets/Scripts/ShopManager.cs"
 "Assets/Scripts/TimingZone.cs"
 "Assets/TextMesh Pro/Examples & Extras/Scripts/Benchmark01.cs"

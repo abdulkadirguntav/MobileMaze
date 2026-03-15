@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float slideDuration = 0.8f;
     [Tooltip("Normal Karakter Boyu")]
     [SerializeField] private float normalHeight = 2f;
-    [Tooltip("Kayma Karakter Boyu")]
-    [SerializeField] private float slideHeight = 1f;
+    [Tooltip("Kayma Karakter Boyu (Engellere çarpmamak için iyice küçültüldü)")]
+    [SerializeField] private float slideHeight = 0.5f;
 
     [Header("Wall Run Ayarları")]
     [Tooltip("Duvarda kalma süresi")]

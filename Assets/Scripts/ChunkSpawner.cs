@@ -8,7 +8,10 @@ public class ChunkSpawner : MonoBehaviour
     public Transform playerTransform;
 
     [Header("Tünel (Chunk) Ayarları")]
-    [Tooltip("Elinde bulunan 48 adet tünel prefab'ı")]
+    [Tooltip("Oyun başladığında oyuncunun içinde doğacağı BOŞ tünel prefab'ı")]
+    public GameObject emptyTunnelPrefab;
+
+    [Tooltip("Elinde bulunan tünel prefab'ları (İçinde Saw olanları Inspector'dan silebilirsin)")]
     public GameObject[] tunnelPrefabs;
     
     [Tooltip("Her bir tünelin Z eksenindeki net uzunluğu")]
@@ -31,6 +34,9 @@ public class ChunkSpawner : MonoBehaviour
     
     // Bir sonraki tünelin doğacağı Z ekseni noktası
     private float nextSpawnZ = 0f;
+
+    // İlk başlangıç tüneli mi?
+    private bool isFirstChunk = true;
 
     void Start()
     {
@@ -90,22 +96,33 @@ public class ChunkSpawner : MonoBehaviour
     {
         GameObject chunkToSpawn = null;
 
-        // Havuzda kullanılabilir tünel var mı?
-        if (chunkPool.Count > 0)
+        if (isFirstChunk && emptyTunnelPrefab != null)
         {
-            // Havuzdaki tünellerden rastgele birini seç
-            int randomIndex = Random.Range(0, chunkPool.Count);
-            chunkToSpawn = chunkPool[randomIndex];
-            chunkPool.RemoveAt(randomIndex);
+            // OYUN STARTI: İlk tüneli her zaman "emptyTunnelPrefab" yap.
+            // Bunu pooling döngüsüne katmıyoruz (veya katabiliriz, ama ilk tünel olarak Instantiate ediyoruz).
+            chunkToSpawn = Instantiate(emptyTunnelPrefab, Vector3.zero, Quaternion.identity);
+            chunkToSpawn.transform.SetParent(this.transform);
+            ResetChunkState(chunkToSpawn.transform);
+            isFirstChunk = false;
         }
         else
         {
-            // Sadece havuz yetersiz gelirse yeni üret (Edge case koruması)
-            int prefabIndex = Random.Range(0, tunnelPrefabs.Length);
-            chunkToSpawn = Instantiate(tunnelPrefabs[prefabIndex], Vector3.zero, Quaternion.identity);
-            chunkToSpawn.transform.SetParent(this.transform);
-            ResetChunkState(chunkToSpawn.transform); // Fail-safe
-            Debug.LogWarning("ChunkSpawner: Havuz yetersiz kaldı, boyutu artırılmalı. Yeni üretildi.");
+            // Normal Havuzdan (Pool) tünel çek
+            if (chunkPool.Count > 0)
+            {
+                int randomIndex = Random.Range(0, chunkPool.Count);
+                chunkToSpawn = chunkPool[randomIndex];
+                chunkPool.RemoveAt(randomIndex);
+            }
+            else
+            {
+                // Edge case koruması: Sadece havuz yetersiz gelirse yeni üret
+                int prefabIndex = Random.Range(0, tunnelPrefabs.Length);
+                chunkToSpawn = Instantiate(tunnelPrefabs[prefabIndex], Vector3.zero, Quaternion.identity);
+                chunkToSpawn.transform.SetParent(this.transform);
+                ResetChunkState(chunkToSpawn.transform); 
+                Debug.LogWarning("ChunkSpawner: Havuz yetersiz kaldı, boyutu artırılmalı. Yeni üretildi.");
+            }
         }
 
         // Z Ekseni Start Noktası (Kaydet)
@@ -129,11 +146,12 @@ public class ChunkSpawner : MonoBehaviour
 
         // Kapat ve havuza geri at (Sıfır Destroy mantığı)
         oldChunk.SetActive(false);
+        // INFO: Eğer EmptyTunnel'ın da sonradan tekrar gelmemesini istiyorsak,
+        // onu havuza eklemeyebiliriz. Ancak sonsuz koşu için havuza dahil olmasında
+        // sakınca yoktur, oyun sırasında nadiren "boş tünel" geçişi sağlayabilir.
         chunkPool.Add(oldChunk);
 
         // --- OBJECT POOLING RESETLEME MANTIĞI ---
-        // Tünel tekrar kullanılmadan önce, içinde daha önce Player tarafından yokedilmiş (gizlenmiş)
-        // engeller (Obstacle) varsa geri aç. Gizli objeler (SecretObject) açılmışsa geri kapa.
         ResetChunkState(oldChunk.transform);
     }
 
