@@ -36,6 +36,7 @@ public class PlayerController : MonoBehaviour
 
     // Bileşenler ve Sabit Değerler
     private UnityEngine.CharacterController controller;
+    private Animator anim;
     private float verticalVelocity;
 
     // Durum Kontrolleri (State Machine)
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<UnityEngine.CharacterController>();
+        anim = GetComponentInChildren<Animator>(); // Karakter modelinin içindeki Animator'u bul
         SetHeight(normalHeight);
         currentBoostTimer = autoBoostCooldown;
     }
@@ -242,6 +244,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SlideRoutine()
     {
         isSliding = true;
+        if (anim != null) anim.SetBool("IsSlide", true); // Animasyon tetikle
         OnSlideStart?.Invoke();
 
         // Havadaysa hızlıca yere in
@@ -257,6 +260,7 @@ public class PlayerController : MonoBehaviour
         SetHeight(normalHeight);
         
         isSliding = false;
+        if (anim != null) anim.SetBool("IsSlide", false); // Animasyon bitir
         OnSlideEnd?.Invoke();
     }
 
@@ -265,6 +269,8 @@ public class PlayerController : MonoBehaviour
         if (isSliding) return;
 
         isWallRunning = true;
+        if (anim != null) anim.SetBool("IsWallRun", true); // Animasyon tetikle
+        
         verticalVelocity = Mathf.Max(verticalVelocity, 0f); // Düşüşü SFX/Görsel için anlık durdur (veya sekecekse tut)
         OnWallRunStart?.Invoke(wallDirection);
 
@@ -282,6 +288,8 @@ public class PlayerController : MonoBehaviour
     {
         if (!isWallRunning) return;
         isWallRunning = false;
+        if (anim != null) anim.SetBool("IsWallRun", false); // Animasyon bitir
+
         if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
         OnWallRunEnd?.Invoke();
     }

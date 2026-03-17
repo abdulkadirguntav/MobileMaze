@@ -5,138 +5,69 @@ public class CameraController : MonoBehaviour
     [Header("Referanslar")]
     [Tooltip("Kamera objesi")]
     [SerializeField] private Camera cam;
-    [Tooltip("Oyuncu kontrolcüsü (Events için)")]
-    [SerializeField] private PlayerController player;
+    [Tooltip("Oyuncu kontrolcüsü (Takip edilecek hedef)")]
+    public Transform playerTransform;
 
-    [Header("Head Bobbing Ayarları")]
-    [SerializeField] private float bobFrequency = 1.5f;
-    [SerializeField] private float bobAmplitudeX = 0.05f;
-    [SerializeField] private float bobAmplitudeY = 0.05f;
-    private float bobTimer = 0f;
-    private Vector3 defaultLocalPos;
-
-    [Header("Slide Juice (Kayma Hissi)")]
-    [SerializeField] private float slideFovIncrease = 15f;
-    [SerializeField] private float slideTiltX = -10f; // Kamera yukarı bakar
-    [SerializeField] private float slideTransitionSpeed = 10f;
-
-    [Header("Jump Juice (Zıplama Hissi)")]
-    [SerializeField] private float jumpTiltX = 8f;  // Kamera aşağı bakar
-    [SerializeField] private float landShakeIntensity = 0.2f;
-    [SerializeField] private float landShakeDuration = 0.15f;
-
-    [Header("Wall-Run Juice (Duvarda Koşma Hissi)")]
-    [Tooltip("Sağ duvarda sola(+), sol duvarda sağa(-) yatar.")]
-    [SerializeField] private float wallRunRollZ = 15f; 
-    [SerializeField] private float wallRunTransitionSpeed = 8f;
-
-    [Header("Dash (Kinetik Kalkan) Hissi")]
-    [SerializeField] private float dashFovIncrease = 30f;
-    [SerializeField] private float dashTransitionSpeed = 8f;
-
-    // Temel değerler
-    private float baseFov;
-    private Quaternion baseLocalRotation;
+    [Header("Third Person Ayarları")]
+    [Tooltip("Kameranın karakterin neresinde duracağı (Örn: X=0, Y=3, Z=-5)")]
+    public Vector3 offset = new Vector3(0f, 3f, -5f);
     
-    // Hedef değerler
-    private float targetTiltX;
-    private float targetRollZ;
+    [Tooltip("Kameranın ne kadar yumuşak takip edeceği (Düşük = Daha yumuşak)")]
+    public float followSpeed = 10f;
+    
+    [Tooltip("Kamera karaktere mi baksın? (LookAt)")]
+    public bool lookAtPlayer = true;
+    
+    [Tooltip("Kamera karakterin tam merkezine mi yoksa biraz üzerine mi baksın? (Örn: Y=1)")]
+    public Vector3 lookAtOffset = new Vector3(0f, 1f, 0f);
 
-    // Shake
+    [Header("Sarsıntı (Death Effect)")]
+    [SerializeField] private float hitShakeIntensity = 0.5f;
+    [SerializeField] private float hitShakeDuration = 0.5f;
     private float shakeTimer;
     private Vector3 shakeOffset;
-    private float currentLandShakeIntensity;
 
-    private Quaternion currentRotationOffset = Quaternion.identity;
-
-    void Start()
+    private void Start()
     {
         if (cam == null) cam = GetComponentInChildren<Camera>();
         if (cam == null) cam = Camera.main;
 
-        if (player == null) player = GetComponentInParent<PlayerController>();
-        if (player == null) player = FindObjectOfType<PlayerController>();
-
-        baseFov = cam.fieldOfView;
-        baseLocalRotation = cam.transform.localRotation;
-        defaultLocalPos = cam.transform.localPosition;
-        
-        targetTiltX = 0f;
-        targetRollZ = 0f;
-        currentLandShakeIntensity = landShakeIntensity;
-
-        if(player != null)
+        // Player atanmadıysa sahnede bulmaya çalış
+        if (playerTransform == null)
         {
-            player.OnJump += HandleJump;
-            player.OnLand += HandleLand;
-            player.OnSlideStart += HandleSlideStart;
-            player.OnSlideEnd += HandleSlideEnd;
-            player.OnWallRunStart += HandleWallRunStart;
-            player.OnWallRunEnd += HandleWallRunEnd;
+            PlayerController pc = FindObjectOfType<PlayerController>();
+            if (pc != null)
+            {
+                playerTransform = pc.transform;
+            }
         }
     }
 
-    void OnDestroy()
+    private void LateUpdate()
     {
-        if(player != null)
-        {
-            player.OnJump -= HandleJump;
-            player.OnLand -= HandleLand;
-            player.OnSlideStart -= HandleSlideStart;
-            player.OnSlideEnd -= HandleSlideEnd;
-            player.OnWallRunStart -= HandleWallRunStart;
-            player.OnWallRunEnd -= HandleWallRunEnd;
-        }
-    }
+        if (playerTransform == null) return;
 
-    void Update()
-    {
-        UpdateJumpRestoration();
         UpdateShake();
-        Vector3 bobPos = CalculateHeadBobbing();
 
-        // Dash veya Slide kontrolü
-        float baseTargetFov = player != null && player.isInvincible ? baseFov + dashFovIncrease : baseFov;
-        float finalTargetFov = player != null && player.isSliding ? baseTargetFov + slideFovIncrease : baseTargetFov;
+        // Hedef pozisyon (Player'ın konumu + offset)
+        Vector3 targetPosition = playerTransform.position + offset;
 
-        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, finalTargetFov, Time.deltaTime * (player != null && player.isSliding ? slideTransitionSpeed : dashTransitionSpeed));
+        // Yumuşak geçiş (Smooth follow)
+        // Z ekseninde daha katı (hızlı) takip etmesi istenirse sadece Z için farklı bir lerp kullanılabilir
+        // Ancak Subway Surfers tarzında X ve Z genelde beraber akıcı takip edilir.
+        Vector3 smoothedPosition = Vector3.Lerp(cam.transform.position, targetPosition, followSpeed * Time.deltaTime);
 
-        // Eğer öldüysek kamerayı yere doğru devir (FPS yığılma hissi)
-        if (player != null && player.isDead)
+        // Pozisyonu uygula (Sarsıntı varsa ekle)
+        cam.transform.position = smoothedPosition + shakeOffset;
+
+        // Hedefe bak
+        if (lookAtPlayer)
         {
-            targetTiltX = 60f; // Yere bak
-            targetRollZ = 25f; // Sola veya sağa yat
-        }
-
-        Quaternion targetRot = Quaternion.Euler(targetTiltX, 0, targetRollZ);
-        currentRotationOffset = Quaternion.Slerp(currentRotationOffset, targetRot, Time.deltaTime * (player != null && player.isDead ? 3f : wallRunTransitionSpeed));
-        
-        cam.transform.localRotation = baseLocalRotation * currentRotationOffset;
-        
-        // Final position (Default + Bobbing + Shake)
-        cam.transform.localPosition = defaultLocalPos + bobPos + shakeOffset; 
-    }
-
-    private Vector3 CalculateHeadBobbing()
-    {
-        if (player == null) return Vector3.zero;
-
-        // Karakter yerdeyse ve hareket ediyorsa bobbing yap (Z ekseninde koşuyor varsayıyoruz)
-        if (!player.isJumping && !player.isSliding && !player.isWallRunning)
-        {
-            float speedMultiplier = player.GetCurrentSpeed() / 20f; // 20f normal koşu hızı referansı
-            bobTimer += Time.deltaTime * bobFrequency * speedMultiplier;
-
-            float bobX = Mathf.Sin(bobTimer / 2f) * bobAmplitudeX;
-            float bobY = Mathf.Sin(bobTimer) * bobAmplitudeY;
-
-            return new Vector3(bobX, bobY, 0f);
-        }
-        else
-        {
-            // Havada veya kayıyorken bobbing'i sıfıra yumuşatarak çek
-            bobTimer = 0f;
-            return Vector3.Lerp(cam.transform.localPosition - defaultLocalPos - shakeOffset, Vector3.zero, Time.deltaTime * 5f);
+            Vector3 lookTarget = playerTransform.position + lookAtOffset;
+            
+            // Eğer sarsıntı varsa bakış açısında da hafif titreşim hissedilmesi için 
+            // lookTarget'a da eklenebilir ama genelde sadece pozisyon sarsıntısı yeterlidir.
+            cam.transform.LookAt(lookTarget);
         }
     }
 
@@ -145,60 +76,18 @@ public class CameraController : MonoBehaviour
         if (shakeTimer > 0)
         {
             shakeTimer -= Time.deltaTime;
-            shakeOffset = UnityEngine.Random.insideUnitSphere * currentLandShakeIntensity * (shakeTimer / landShakeDuration);
+            // Küre içinde rastgele bir nokta seçip şiddetle çarp
+            shakeOffset = UnityEngine.Random.insideUnitSphere * hitShakeIntensity * (shakeTimer / hitShakeDuration);
         }
         else
         {
-            shakeOffset = Vector3.Lerp(shakeOffset, Vector3.zero, Time.deltaTime * 10f);
-            currentLandShakeIntensity = landShakeIntensity; // Reset intensity
+            shakeOffset = Vector3.zero;
         }
     }
 
-    private void UpdateJumpRestoration()
-    {
-        if (targetTiltX == jumpTiltX)
-        {
-            targetTiltX = Mathf.Lerp(targetTiltX, 0f, Time.deltaTime * 1.5f);
-        }
-    }
-
-    private void HandleJump()
-    {
-        targetTiltX = jumpTiltX;
-    }
-
-    private void HandleLand()
-    {
-        targetTiltX = 0; 
-        shakeTimer = landShakeDuration; 
-        currentLandShakeIntensity = landShakeIntensity;
-    }
-
-    private void HandleSlideStart()
-    {
-        targetTiltX = slideTiltX; 
-    }
-
-    private void HandleSlideEnd()
-    {
-        targetTiltX = 0f;
-    }
-
-    private void HandleWallRunStart(int direction)
-    {
-        // En sol şerit (Sol duvar: -1) -> Z ekseninde SAĞA (-15 derece) 
-        // En sağ şerit (Sağ duvar: 1) -> Z ekseninde SOLA (+15 derece)
-        targetRollZ = wallRunRollZ * direction; 
-    }
-
-    private void HandleWallRunEnd()
-    {
-        targetRollZ = 0f;
-    }
-
+    // GameManager (veya Player) öldüğünde bunu çağırır
     public void TriggerHitStopShake()
     {
-        shakeTimer = landShakeDuration * 2f;
-        currentLandShakeIntensity = landShakeIntensity * 1.5f; 
+        shakeTimer = hitShakeDuration;
     }
 }
