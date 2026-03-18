@@ -58,6 +58,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dashDuration = 5f;
     [SerializeField] private float dashSpeed = 50f;
 
+    [Header("Mobil Swipe Ayarları")]
+    [Tooltip("Kaydırmanın algılanması için gereken minimum piksel mesafesi")]
+    [SerializeField] private float swipeThreshold = 50f;
+    private Vector2 startTouch;
+    private Vector2 swipeDelta;
+    private bool isSwiping;
+
+    [Header("Görsel Ayarlar (Third Person)")]
+    [Tooltip("Duvar koşusunda karakter modelinin eğilme açısı (Örn: 90)")]
+    [SerializeField] private float wallRunTiltAngle = 60f;
+    [Tooltip("Eğilme hızının yumuşaklığı")]
+    [SerializeField] private float wallRunTiltSpeed = 10f;
+    [Tooltip("Karakterin havada kalmasını engellemek için Y eksenindeki ofseti (Aşağı çekmek için eksi değerler)")]
+    [SerializeField] private float visualYOffset = -1.08f;
+    
+    private float currentTilt = 0f;
+    private int currentWallDirection = 0; // -1 Sol, 1 Sağ
+
     // Etkinlikler (FPS Kamera için)
     public event Action OnJump;
     public event Action OnLand;
@@ -102,12 +120,44 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(displacement);
         CheckLanding();
+        UpdateCharacterTilt(); // Duvar koşusu eğilimini (Tilt) uygula
+    }
+
+    private void UpdateCharacterTilt()
+    {
+        if (anim == null) return;
+
+        // Hedef eğimi belirle (Tilt)
+        float targetTilt = 0f;
+        if (isWallRunning)
+        {
+            // Sağ duvar (1) ise sola yatsın (+ açı). Sol duvar (-1) ise sağa yatsın (- açı).
+            targetTilt = currentWallDirection * wallRunTiltAngle; 
+        }
+
+        // Yumuşak geçiş
+        currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * wallRunTiltSpeed);
+
+        // Beyblade (kendi etrafında dönme) sorununu çözmek için Quaternion kullanıyoruz:
+        // Sadece Z ekseninde bük, X ve Y sıfır kalsın. (Zaten karakterin dönüş yönünü rotasyon değil script hallediyor)
+        anim.transform.localRotation = Quaternion.Euler(0, 0, currentTilt);
+
+        // --- ZORUNLU AŞAĞI ÇEKME (OFFSET) ---
+        // Eğer Animator ana objenin içindeyse (child ise) modeli aşağı/yukarı kaydırmamıza izin ver
+        if (anim.transform != this.transform)
+        {
+            Vector3 localPos = anim.transform.localPosition;
+            anim.transform.localPosition = new Vector3(localPos.x, visualYOffset, localPos.z);
+        }
     }
 
     private void CheckLanding()
     {
-        if (controller.isGrounded && !wasGrounded && !isWallRunning)
+        if (controller.isGrounded && !wasGrounded)
         {
+            if (isWallRunning) StopWallRun(); // Yere indiğinde duvar koşusunu kes
+            
+            if (anim != null) anim.SetBool("IsJump", false);
             OnLand?.Invoke();
             isJumping = false;
         }
@@ -117,9 +167,55 @@ public class PlayerController : MonoBehaviour
     private void HandleInput()
     {
         bool actionTaken = false;
+        
+        bool swipeLeft = false;
+        bool swipeRight = false;
+        bool swipeUp = false;
+        bool swipeDown = false;
+
+        // === MOBİL SWIPE (KAYDIRMA) KONTROLLERİ ===
+        if (Input.touches.Length > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                isSwiping = true;
+                startTouch = t.position;
+            }
+            else if (t.phase == TouchPhase.Canceled || t.phase == TouchPhase.Ended)
+            {
+                isSwiping = false;
+            }
+            else if (t.phase == TouchPhase.Moved && isSwiping)
+            {
+                swipeDelta = t.position - startTouch;
+                if (swipeDelta.magnitude > swipeThreshold)
+                {
+                    // Hangi yöne kaydırıldığına karar ver
+                    float x = swipeDelta.x;
+                    float y = swipeDelta.y;
+                    
+                    if (Mathf.Abs(x) > Mathf.Abs(y))
+                    {
+                        // Yatay
+                        if (x < 0) swipeLeft = true;
+                        else swipeRight = true;
+                    }
+                    else
+                    {
+                        // Dikey
+                        if (y > 0) swipeUp = true;
+                        else swipeDown = true;
+                    }
+
+                    // Bir kez algılandıktan sonra sıfırla ki ard arda tetiklenmesin
+                    isSwiping = false;
+                }
+            }
+        }
 
         // Şerit Değiştirme (X Ekseninde Sol/Sağ) veya Wall Run Başlatma
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow) || swipeLeft)
         {
             actionTaken = true;
             if (currentLane > 0)
@@ -133,7 +229,7 @@ public class PlayerController : MonoBehaviour
                 StartWallRun(-1);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow) || swipeRight)
         {
             actionTaken = true;
             if (currentLane < 2)
@@ -149,7 +245,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Zıplama
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)))
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || swipeUp))
         {
             actionTaken = true;
             if (isWallRunning)
@@ -165,7 +261,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Kayma
-        if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)))
+        if ((Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow) || swipeDown))
         {
             actionTaken = true;
             if (isWallRunning) StopWallRun();
@@ -225,7 +321,11 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded && verticalVelocity < 0 && !isWallRunning)
         {
             verticalVelocity = -2f;
-            isJumping = false;
+            if (isJumping)
+            {
+                if (anim != null) anim.SetBool("IsJump", false);
+                isJumping = false;
+            }
         }
         else
         {
@@ -238,6 +338,7 @@ public class PlayerController : MonoBehaviour
     {
         verticalVelocity = jumpForce;
         isJumping = true;
+        if (anim != null) anim.SetBool("IsJump", true);
         OnJump?.Invoke();
     }
 
@@ -269,7 +370,26 @@ public class PlayerController : MonoBehaviour
         if (isSliding) return;
 
         isWallRunning = true;
-        if (anim != null) anim.SetBool("IsWallRun", true); // Animasyon tetikle
+        currentWallDirection = wallDirection; // Yönü kaydet (görsel eğilme için)
+        
+        // Zıplama durumunu iptal et ki koşu animasyonuna (Running) geri dönebilsin.
+        // Böylece Running animasyonu çalışırken biz de modeli eğmiş (Tilt) olacağız.
+        if (isJumping)
+        {
+            isJumping = false;
+            if (anim != null) anim.SetBool("IsJump", false);
+        }
+        
+        // EĞER DUVAR KOŞUSU İÇİN ÖZEL ANİMASYONUN YOKSA BUNLARI YORUMA ALABİLİRSİN:
+        /*
+        if (anim != null)
+        {
+            if (wallDirection == -1) // Sol Duvar
+                anim.SetBool("IsWallRunLeft", true);
+            else if (wallDirection == 1) // Sağ Duvar
+                anim.SetBool("IsWallRunRight", true);
+        }
+        */
         
         verticalVelocity = Mathf.Max(verticalVelocity, 0f); // Düşüşü SFX/Görsel için anlık durdur (veya sekecekse tut)
         OnWallRunStart?.Invoke(wallDirection);
@@ -288,7 +408,16 @@ public class PlayerController : MonoBehaviour
     {
         if (!isWallRunning) return;
         isWallRunning = false;
-        if (anim != null) anim.SetBool("IsWallRun", false); // Animasyon bitir
+        currentWallDirection = 0; // Eğim sıfırlanacak
+
+        // ÖZEL ANİMASYONLARI YORUMA ALDIYSAK BUNU DA ALMALIYIZ:
+        /*
+        if (anim != null)
+        {
+            anim.SetBool("IsWallRunLeft", false);
+            anim.SetBool("IsWallRunRight", false);
+        }
+        */
 
         if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
         OnWallRunEnd?.Invoke();
@@ -298,13 +427,18 @@ public class PlayerController : MonoBehaviour
     {
         if (controller == null) return;
         
+        // ÖNEMLİ DÜZELTME: Kapsül boyu (Height), Çapının (Radius) 2 katından küçük olamaz.
+        // Eğer kayma boyun 0.5 ise, yarıçap 0.25'ten büyük olamaz. Yoksa Unity fizik kapsülünü 
+        // 1.0 birime zorlar ve karakteri (0.33 kadar) havaya kaldırır!
+        float maxAllowedRadius = newHeight / 2f;
+        // Eğer normal radius'un 0.5 ise, maksimum 0.5'e kadar büyümesine izin ver
+        controller.radius = maxAllowedRadius < 0.5f ? maxAllowedRadius : 0.5f;
+
         // Karakterin Collider boyunu ayarla
         controller.height = newHeight;
         
-        // Kapsülün her zaman 'en alt' kısmının sabit kalması için Pivot merkezini hesaplıyoruz.
-        // Standart bir Unity kapsülünde pivot tam ortadadır, bunu ayaklardan esnetmek için center.y değişmelidir.
-        // Normal boyumuz 2, yeni boyumuz 1 ise -> ayak kısmını korumak için merkezi -0.5 aşağı kaydırıyoruz.
-        controller.center = new Vector3(0, (newHeight - normalHeight) / 2f, 0);
+        // Karakterin uçmaması için (Y=0.08 Skin Width hariç)
+        controller.center = new Vector3(0, newHeight / 2f, 0);
     }
 
     // --- DIŞ SİSTEMLERLE İLETİŞİM (PowerUps & GameManager) ---
