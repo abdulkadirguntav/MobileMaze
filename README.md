@@ -7,9 +7,11 @@
 
 > *"When you realize you are in a simulation, the only thing left to do is break the rules."*
 
+
 **Project: E.C.H.O** is a fast-paced, 3-lane 3D Endless Runner mobile game where you control an advanced prototype trying to escape a colorful and deadly simulation run by an AI. It's not just about dodging left and right; it's a fight for survival using gravity-defying acrobatic moves.
 
-![Gameplay Promo]([Insert_Short_Gameplay_GIF_Here.gif])
+![0406-ezgif com-crop](https://github.com/user-attachments/assets/36f06eef-2597-4c2a-9510-66f1cf842b8d)
+
 
 ## 🎮 Gameplay Features
 
