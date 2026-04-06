@@ -1,60 +1,57 @@
 # 🏃 Project: E.C.H.O (Test Subject Zero)
 
-![Unity](https://img.shields.io/badge/Unity-2022.3%2B-black?style=for-the-badge&logo=unity)
+![Unity](https://img.shields.io/badge/Unity-6-black?style=for-the-badge&logo=unity)
 ![C#](https://img.shields.io/badge/C%23-Programming-blue?style=for-the-badge&logo=c-sharp)
 ![Platform](https://img.shields.io/badge/Platform-Android-green?style=for-the-badge&logo=android)
 ![Status](https://img.shields.io/badge/Status-In_Development-orange?style=for-the-badge)
 
-> *"Bir simülasyonun içinde olduğunu anladığında, yapabileceğin tek şey kuralları yıkmaktır."*
+> *"When you realize you are in a simulation, the only thing left to do is break the rules."*
 
-**Project: E.C.H.O**, yapay zeka tarafından yönetilen renkli ve ölümcül bir VR simülasyonundan kaçmaya çalışan gelişmiş bir prototipi yönettiğimiz, 3 şeritli (3-lane) ve yüksek tempolu bir 3D Endless Runner (Sonsuz Koşu) oyunudur. Sadece sağa sola kaçmaktan ibaret değil; yerçekimine meydan okuyan akrobatik hareketlerle hayatta kalma mücadelesidir.
+**Project: E.C.H.O** is a fast-paced, 3-lane 3D Endless Runner mobile game where you control an advanced prototype trying to escape a colorful and deadly simulation run by an AI. It's not just about dodging left and right; it's a fight for survival using gravity-defying acrobatic moves.
 
-![Gameplay Promo]([Buraya_Oyunundan_Kisa_Bir_Oynanis_GIFi_Ekle_Mutlaka.gif])
+![Gameplay Promo]([Insert_Short_Gameplay_GIF_Here.gif])
 
-## 🎮 Temel Mekanikler (Gameplay Features)
+## 🎮 Gameplay Features
 
-Klasik mobil koşu oyunlarına (Subway Surfers vb.) ek olarak, oyuncu reflekslerini ödüllendiren dinamik fizik mekanikleri entegre edilmiştir:
+In addition to classic mobile runner mechanics, dynamic physics mechanics that reward player reflexes are integrated:
 
-* **Pürüzsüz 3 Şerit Sistemi:** Ekranda kaydırma (Swipe) ile şeritler arası `Vector3.Lerp` kullanılarak kesintisiz ve akıcı geçiş.
-* **Ağırlıksız Duvar Koşusu (Wall-Run):** Oyuncu uygun yüzeylerde yerçekimi kapatılarak duvara kilitlenir. Bu, geçilemez lazer ve engelleri aşmanın tek yoludur.
-* **Fast-Fall (Hızlı Düşüş) & Kayma:** Havadayken aşağı kaydırma komutu verildiğinde karakter anında yere çakılır (Fast-Fall) ve kayma animasyonuna geçerek hitbox'ını küçültür.
-* **Risk ve Ödül (Close Call):** Engellere çarpmasına milisaniyeler kala kaçınan oyuncular ekstra puanla ödüllendirilir.
+* **Smooth 3-Lane System:** Seamless and fluid transitions between lanes using Swipe controls and `Vector3.Lerp`.
+* **Zero-G Wall-Run:** The player locks onto walls on suitable surfaces with gravity disabled. This is the only way to bypass impassable lasers and obstacles.
+* **Fast-Fall & Slide:** When a downward swipe command is given mid-air, the character instantly drops to the ground (Fast-Fall) and transitions into a sliding animation, shrinking its hitbox.
+* **Risk & Reward (Close Call):** Players who dodge obstacles milliseconds before impact are rewarded with extra points.
 
-## 🛠️ Teknik Altyapı ve Mimari (Under the Hood)
+## 🛠️ Under the Hood
 
-Bu proje, mobil platformlarda maksimum performans (60 FPS) hedeflenerek tasarlanmıştır:
+This project is designed targeting maximum performance (60 FPS) on mobile platforms:
 
-* **Dinamik Level Jeneratörü (Chunk Spawner):** Sonsuz tünel hissini vermek için modüler yol parçaları rastgele ancak mantıklı bir sırayla oluşturulur.
-* **Object Pooling:** Sürekli yeni obje üretmek (Instantiate/Destroy) yerine, arkada kalan yol parçaları (Chunk'lar) ve engeller havuza geri gönderilerek RAM dostu bir bellek yönetimi (Garbage Collection Optimizasyonu) sağlanır.
-* **State-Driven Animasyonlar:** Karakterin rotasyonu ve fiziksel durumu (duvarda olma, havada olma) kod ile anlık olarak manipüle edilir. Mixamo animasyonları, Custom Rigidbody fizikleriyle harmanlanmıştır.
+* **Dynamic Level Generator (Chunk Spawner):** Modular path chunks are generated in a random yet logical order to provide an endless tunnel feeling.
+* **Object Pooling:** Instead of constantly creating new objects (Instantiate/Destroy), passed path chunks and obstacles are sent back to the pool, ensuring RAM-friendly memory management (Garbage Collection Optimization).
+* **State-Driven Animations:** The character's rotation and physical state (on a wall, in the air) are manipulated in real-time via code. Mixamo animations are blended with custom Rigidbody physics.
 
-## 🎨 Sanat Tasarımı ve Atmosfer
+## 🎨 Art Design and Atmosphere
 
-Oyunun hikayesi "Yapay Zeka Test Simülasyonu" üzerine kuruludur. Bu nedenle kasvetli zindanlar yerine, renkli, düşük poligonlu (Low-Poly) ve canlı bir açık hava VR ortamı tercih edilmiştir. 
-* *Görsel Varlıklar (Assets): Kenney & Quaternius (CC0 License)*
+The game's lore is built on an "AI Test Simulation". Therefore, instead of gloomy environments, a colorful, low-poly, and vibrant open-air environment was chosen. 
+* *Visual Assets: Kenney & Quaternius (CC0 License)*
 
-## 🚀 Kurulum (Installation)
+## 🚀 Installation
 
-Projeyi Unity'de açmak ve incelemek için:
-1. Repoyu klonlayın: `git clone https://github.com/[KullaniciAdin]/Project-Echo.git`
-2. Unity Hub üzerinden `Add Project` diyerek klasörü seçin.
-3. `Scenes` klasörü altındaki `MainLevel` sahnesini açın.
-4. Unity Simulator üzerinden Android veya iOS cihaz formatını seçerek Play tuşuna basın.
+To open and inspect the project in Unity:
+1. Clone the repository: `git clone https://github.com/[YourUsername]/Project-Echo.git`
+2. Select the folder by clicking `Add Project` via Unity Hub.
+3. Open the `MainLevel` scene under the `Scenes` folder.
+4. Select Android or iOS device format via Unity Simulator and press Play.
 
-## 🗺️ Yol Haritası (Roadmap)
+## 🗺️ Roadmap
 
-- [x] Temel Swipe ve 3-Lane sisteminin kodlanması
-- [x] Zıplama, Kayma ve Fast-Fall mekanikleri
-- [x] Wall-Run (Duvar koşusu) fizik manipülasyonu
-- [x] Chunk Spawner (Sonsuz Level Üreticisi) entegrasyonu
-- [ ] Low-Poly renkli simülasyon çevresinin tasarlanması (Yapım Aşamasında)
-- [ ] Engel havuzu ve zorluk eğrisinin (Difficulty Curve) ayarlanması
-- [ ] Toplanabilir eşyalar (Collectibles) ve UI (Kullanıcı Arayüzü) entegrasyonu
-- [ ] Audio (BGM ve SFX) eklemeleri
+- [x] Coding the core Swipe and 3-Lane system
+- [x] Jump, Slide, and Fast-Fall mechanics
+- [x] Wall-Run physics manipulation
+- [x] Chunk Spawner (Endless Level Generator) integration
+- [ ] Designing the low-poly colorful simulation environment (WIP)
+- [ ] Setting up the obstacle pool and difficulty curve
+- [ ] Collectibles and UI integration
+- [ ] Audio (BGM and SFX) implementation
 
-## 👨‍💻 Geliştirici
+## 👨‍💻 Developer
 
 **Abdülkadir Güntav**
-4. Sınıf Bilgisayar Mühendisliği Öğrencisi | Sazakan Studio
-* [LinkedIn Profilim]([LinkedIn_Linkini_Buraya_Koy])
-* [Medium Makalelerim]([Medium_Linkini_Buraya_Koy])
