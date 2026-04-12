@@ -422,6 +422,7 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.67f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.67f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.67f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
+"Assets/HeroicTraversal/SmoothFollow.cs"
 "Assets/Scripts/CameraController.cs"
 "Assets/Scripts/ChunkSpawner.cs"
 "Assets/Scripts/GameManager.cs"

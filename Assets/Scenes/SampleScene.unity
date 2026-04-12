@@ -1753,7 +1753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca08541055c3f5f4697774cd29c7d213, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
+  playerController: {fileID: 316246852}
   playerTransform: {fileID: 2000735962}
   bgmAudioSource: {fileID: 0}
   crashSfxClip: {fileID: 8300000, guid: 88f8b3ccb0a470a4f9c8d3e3144acbc6, type: 3}
@@ -4684,7 +4684,7 @@ MonoBehaviour:
   emptyTunnelPrefab: {fileID: 0}
   tunnelPrefabs:
   - {fileID: 2134362061828390897, guid: 52eac0c173593e945b4f4721a9d6dea3, type: 3}
-  chunkLength: 20
+  chunkLength: 18
   activeChunkCount: 5
   initialPoolSize: 15
   recycleDistance: 30
@@ -6383,7 +6383,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6389950729296221827, guid: 52eac0c173593e945b4f4721a9d6dea3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -58.86
+      value: -59.34
       objectReference: {fileID: 0}
     - target: {fileID: 6389950729296221827, guid: 52eac0c173593e945b4f4721a9d6dea3, type: 3}
       propertyPath: m_LocalPosition.y
