@@ -68,22 +68,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Herhangi bir ölümcül engele çarpıldığında çağrılacak yeni fonksiyon
+    // Herhangi bir ölümcül engele çarpıldığında çağrılacak fonksiyon
     public void HandleCollision()
     {
         if (isGameOver) return;
-
-        if (playerController != null)
-        {
-            // Eğer Dash açıksa ölümsüzdür, hiçbir şey olmaz
-            if (playerController.isInvincible)
-            {
-                return; 
-            }
-
-        }
-
-        // Dash (Auto-Boost) yoksa oyun biter
         GameOver();
     }
 

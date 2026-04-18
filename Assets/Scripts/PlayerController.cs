@@ -45,18 +45,8 @@ public class PlayerController : MonoBehaviour
     public bool isWallRunning { get; private set; } = false;
     public bool isDead { get; private set; } = false;
     
-    // Güçlendirme Envanteri & Durumları
+    // Güçlendirme Durumu
     public bool isInvincible { get; private set; } = false;
-    public bool isAcrobaticDodging { get; private set; } = false;
-
-    [Header("QTE & Auto-Boost Ayarları")]
-    public float autoBoostCooldown = 120f;
-    private float currentBoostTimer;
-    private bool inTimingZone = false;
-
-    [Header("Güçlendirme Ayarları")]
-    [SerializeField] private float dashDuration = 5f;
-    [SerializeField] private float dashSpeed = 50f;
 
     [Header("Mobil Swipe Ayarları")]
     [Tooltip("Kaydırmanın algılanması için gereken minimum piksel mesafesi")]
@@ -66,17 +56,10 @@ public class PlayerController : MonoBehaviour
     private bool isSwiping;
 
     [Header("Görsel Ayarlar (Third Person)")]
-    [Tooltip("Duvar koşusunda karakter modelinin eğilme açısı (Örn: 90)")]
-    [SerializeField] private float wallRunTiltAngle = 60f;
-    [Tooltip("Eğilme hızının yumuşaklığı")]
-    [SerializeField] private float wallRunTiltSpeed = 10f;
     [Tooltip("Karakterin havada kalmasını engellemek için Y eksenindeki ofseti (Aşağı çekmek için eksi değerler)")]
     [SerializeField] private float visualYOffset = -1.08f;
-    
-    private float currentTilt = 0f;
-    private int currentWallDirection = 0; // -1 Sol, 1 Sağ
 
-    // Etkinlikler (FPS Kamera için)
+    private int currentWallDirection = 0; // -1 Sol, 1 Sağ
     public event Action OnJump;
     public event Action OnLand;
     public event Action OnSlideStart;
@@ -94,14 +77,12 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<UnityEngine.CharacterController>();
         anim = GetComponentInChildren<Animator>(); // Karakter modelinin içindeki Animator'u bul
         SetHeight(normalHeight);
-        currentBoostTimer = autoBoostCooldown;
     }
 
     void Update()
     {
         if (isDead) return;
 
-        UpdateAutoBoostTimer();
         HandleInput();
         CalculateVerticalMovement();
 
@@ -127,23 +108,10 @@ public class PlayerController : MonoBehaviour
     {
         if (anim == null) return;
 
-        // Hedef eğimi belirle (Tilt)
-        float targetTilt = 0f;
-        if (isWallRunning)
-        {
-            // Sağ duvar (1) ise sola yatsın (+ açı). Sol duvar (-1) ise sağa yatsın (- açı).
-            targetTilt = currentWallDirection * wallRunTiltAngle; 
-        }
+        // Dönme yok — wall-run animasyonu görseli hallediyor
+        anim.transform.localRotation = Quaternion.identity;
 
-        // Yumuşak geçiş
-        currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * wallRunTiltSpeed);
-
-        // Beyblade (kendi etrafında dönme) sorununu çözmek için Quaternion kullanıyoruz:
-        // Sadece Z ekseninde bük, X ve Y sıfır kalsın. (Zaten karakterin dönüş yönünü rotasyon değil script hallediyor)
-        anim.transform.localRotation = Quaternion.Euler(0, 0, currentTilt);
-
-        // --- ZORUNLU AŞAĞI ÇEKME (OFFSET) ---
-        // Eğer Animator ana objenin içindeyse (child ise) modeli aşağı/yukarı kaydırmamıza izin ver
+        // Modeli doğru yükseklikte tut (Y offseti koru)
         if (anim.transform != this.transform)
         {
             Vector3 localPos = anim.transform.localPosition;
@@ -273,48 +241,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (actionTaken)
-        {
-            TryAcrobaticDodge();
-        }
+        _ = actionTaken; // used above for wall-run / lane change logic
     }
 
-    private void UpdateAutoBoostTimer()
-    {
-        if (isInvincible) return; // Zaten Boost (Ölümsüzlük) modundaysa sayma
-
-        currentBoostTimer -= Time.deltaTime;
-        if (currentBoostTimer <= 0f)
-        {
-            currentBoostTimer = autoBoostCooldown;
-            ActivateDash(dashDuration, dashSpeed);
-            Debug.Log("AUTO-BOOST AKTİF! Oynanış Hızlanıyor!");
-        }
-    }
-
-    public void SetTimingZoneStatus(bool status)
-    {
-        inTimingZone = status;
-    }
-
-    private void TryAcrobaticDodge()
-    {
-        if (inTimingZone)
-        {
-            Debug.Log("QTE BAŞARILI! Akrobatik Geçiş: +100 Puan!");
-            inTimingZone = false; // Tek bir engel için bir defa puan verilir
-            
-            // Şov Senaryosu: Kısa süreliğine engelin içinden geçme hakkı
-            StartCoroutine(AcrobaticInvincibilityRoutine());
-        }
-    }
-
-    private IEnumerator AcrobaticInvincibilityRoutine()
-    {
-        isAcrobaticDodging = true;
-        yield return new WaitForSeconds(0.4f); // Engelin içinden zararsız geçmek için süre
-        isAcrobaticDodging = false;
-    }
 
     private void CalculateVerticalMovement()
     {
@@ -373,25 +302,28 @@ public class PlayerController : MonoBehaviour
         currentWallDirection = wallDirection; // Yönü kaydet (görsel eğilme için)
         
         // Zıplama durumunu iptal et ki koşu animasyonuna (Running) geri dönebilsin.
-        // Böylece Running animasyonu çalışırken biz de modeli eğmiş (Tilt) olacağız.
         if (isJumping)
         {
             isJumping = false;
             if (anim != null) anim.SetBool("IsJump", false);
         }
         
-        // EĞER DUVAR KOŞUSU İÇİN ÖZEL ANİMASYONUN YOKSA BUNLARI YORUMA ALABİLİRSİN:
-        /*
+        // Sol / Sağ duvar koşusu animasyonlarını ayrı ayrı tetikle
         if (anim != null)
         {
             if (wallDirection == -1) // Sol Duvar
+            {
                 anim.SetBool("IsWallRunLeft", true);
+                anim.SetBool("IsWallRunRight", false);
+            }
             else if (wallDirection == 1) // Sağ Duvar
+            {
                 anim.SetBool("IsWallRunRight", true);
+                anim.SetBool("IsWallRunLeft", false);
+            }
         }
-        */
         
-        verticalVelocity = Mathf.Max(verticalVelocity, 0f); // Düşüşü SFX/Görsel için anlık durdur (veya sekecekse tut)
+        verticalVelocity = Mathf.Max(verticalVelocity, 0f);
         OnWallRunStart?.Invoke(wallDirection);
 
         if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
@@ -410,14 +342,11 @@ public class PlayerController : MonoBehaviour
         isWallRunning = false;
         currentWallDirection = 0; // Eğim sıfırlanacak
 
-        // ÖZEL ANİMASYONLARI YORUMA ALDIYSAK BUNU DA ALMALIYIZ:
-        /*
         if (anim != null)
         {
             anim.SetBool("IsWallRunLeft", false);
             anim.SetBool("IsWallRunRight", false);
         }
-        */
 
         if (wallRunCoroutine != null) StopCoroutine(wallRunCoroutine);
         OnWallRunEnd?.Invoke();
@@ -441,29 +370,11 @@ public class PlayerController : MonoBehaviour
         controller.center = new Vector3(0, newHeight / 2f, 0);
     }
 
-    // --- DIŞ SİSTEMLERLE İLETİŞİM (PowerUps & GameManager) ---
-
-    public void ActivateDash(float duration, float boostSpeed)
-    {
-        StartCoroutine(DashRoutine(duration, boostSpeed));
-    }
-
-    private IEnumerator DashRoutine(float duration, float boostSpeed)
-    {
-        isInvincible = true;
-        float originalSpeed = forwardSpeed;
-        forwardSpeed = boostSpeed;
-
-        yield return new WaitForSeconds(duration);
-
-        forwardSpeed = originalSpeed;
-        isInvincible = false;
-    }
+    // --- DIŞ SİSTEMLERLE İLETİŞİM (GameManager) ---
 
     public void SetForwardSpeed(float newSpeed)
     {
-        // Dash aktifken GameManager'dan gelen genel hız güncellemelerini yoksay
-        if (!isInvincible && !isDead)
+        if (!isDead)
         {
             forwardSpeed = newSpeed;
         }
@@ -480,25 +391,8 @@ public class PlayerController : MonoBehaviour
 
         if (other.CompareTag("Obstacle"))
         {
-            // Senaryo 3: Juggernaut Senaryosu (Auto-Boost aktif)
-            if (isInvincible)
-            {
-                Debug.Log("Juggernaut Modu: Engel parçalandı!");
-                other.gameObject.SetActive(false); // Engeli ezip geçer (kırar)
-                return;
-            }
-
-            // Senaryo 2: Şov Senaryosu (QTE başarılı, animasyonda)
-            if (isAcrobaticDodging)
-            {
-                Debug.Log("Şov Modu: Engelden zararsızca sıyrıldı!");
-                // Çarpmıyoruz, yavaşlamıyoruz, içinden estetikle kayıp geçiyoruz
-                return;
-            }
-
-            // Senaryo 1: Normal Senaryo (Başarısız Zamanlama & Boost Yok) -> ÖLÜM
             Die();
-            GameManager.Instance.HandleCollision(); // GameManager Game Over sürecini başlatacak
+            GameManager.Instance.HandleCollision();
         }
     }
 
